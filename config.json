@@ -1,0 +1,12 @@
+{
+  "bot": {
+    "token": "ODUzNjIzNDg2NTMwMTkxMzgw.YMYE0g.i4pj6oERYKM51TrenpoZA6v8bxU",
+    "prefix": "*"
+  },
+  "roles": {
+    "unverified": 807047548409479168,
+    "verified": 807046693211996180,
+    "mod_roles": [807031768573149184, 807039350877585488]
+  }
+}
+

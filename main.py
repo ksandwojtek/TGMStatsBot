@@ -41,21 +41,32 @@ date = datetime.datetime.now()
 @client.command()
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def stats(ctx: commands.Context, mc_name : str):
-    if ctx.channel.id == 852546541830012988:
+    if ctx.channel.id == 765849289817456651:
             async with ctx.typing():
                 async with aiohttp.ClientSession() as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + mc_name, ) as r:
                         res = await r.json()
+                        #######
                         skin = res['user']['uuid']
                         ms = res['user']['lastOnlineDate']
                         ms2 = res['user']['initialJoinDate']
+                        win = res['user']['wins']
+                        lost = res['user']['losses']
+                        k = res['user']['kills']
+                        d = res['user']['deaths']
+                        #######
                         page1 = discord.Embed(title="", color=0xbc2a82)
                         page1.set_author(name=mc_name + " Stats on The Cylone Network")
                         page1.add_field(name="<a:played:853633469014605824> Matches played", value=(res['user']['matches']), inline=True)
                         page1.add_field(name="<a:kills:853628582731186177> Kills", value=(res['user']['kills']), inline=True)
+                        page1.add_field(name="<a:deaths:855109742288437250> Deaths", value=(res['user']['deaths']), inline=True)
+                        kd = "{:.2f}".format(k/d)
+                        page1.add_field(name="<a:kd:855110404735893515> K/D", value=kd, inline=True)
+                        page1.add_field(name="<a:level:853628581188337666> Level", value=(res['user']['level']), inline=True)
                         page1.add_field(name="<a:wins:853628581698600961> Wins", value=(res['user']['wins']), inline=True)
                         page1.add_field(name="<:loses:853633469070835712> Losses", value=(res['user']['losses']), inline=True)
-                        page1.add_field(name="<a:level:853628581188337666> Level", value=(res['user']['level']), inline=True)
+                        wl = "{:.2f}".format(win/lost)
+                        page1.add_field(name="<a:wl:855110803082313728> W/L", value=wl, inline=True)
                         page1.add_field(name="<a:wool:853628583535968286> Wool Destroys", value=(res['user']['wool_destroys']), inline=True)
                         page1.add_field(name="Last Online", value=(timeago.format(ms/1000.0, now, 'en')), inline=True)
                         page1.add_field(name="Join Date", value=(timeago.format(ms2/1000.0, now, 'en')), inline=True)
@@ -67,12 +78,12 @@ async def stats(ctx: commands.Context, mc_name : str):
                         async with cs.get('https://tgmapi.cylonemc.net/mc/match/latest/' + mc_name, ) as r:
                             res = await r.json()
                             ms3 = res[0]['match']['startedDate']
-                            ms4 = res[0]['match']['finishedDate']
+                            i=0
                             page2 = discord.Embed(title="", color=0xbc2a82)
                             page2.set_author(name=mc_name + " Latest Match Stats")
-                            page2.add_field(name="<a:redblue:853636359108558898> Winning Team", value=(res[0]["match"]["winningTeam"].capitalize()), inline=False)
+                            page2.add_field(name="<a:wool:853628583535968286> Winning Team", value=(res[0]["match"]["winningTeam"].capitalize()), inline=False)
                             page2.add_field(name="<a:match:854808917024309328> Match Size", value=(res[0]["matchSize"]), inline=False)
-                            page2.add_field(name="<:maps:853637839064924170> Map", value=(res[0]["loadedMap"]["name"] + " ⦿ Map creators: " + res[0]['loadedMap']['authors'][0]['username'] + " • " + res[0]['loadedMap']['authors'][1]['username']), inline=False)
+                            page2.add_field(name="<:maps:853637839064924170> Map", value=(res[0]["loadedMap"]["name"]), inline=False)
                             page2.add_field(name="<a:clock:854800563857784872> Time elapsed", value=(res[0]["timeElapsed"]), inline=True)
                             page2.add_field(name="Started", value=(datetime.datetime.fromtimestamp(ms3/1000.0).strftime('%m-%d • %H:%M:%S')), inline=True)
                             page2.timestamp = datetime.datetime.utcnow()
@@ -135,15 +146,7 @@ async def stats(ctx, error):
             time.sleep(2)
             await ctx.message.delete()
             time.sleep(2)
-        else:
-            if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
-                embedVar = discord.Embed(title="Play more to unlock stats!", color=0xFF0000)
-                await ctx.send(embed=embedVar, delete_after=5.0)
-                time.sleep(2)
-                await ctx.message.delete()
-                time.sleep(2)
-            else:
-                pass
+            pass
 
 @client.command()
 async def ping(ctx):

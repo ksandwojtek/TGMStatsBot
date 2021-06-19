@@ -7,6 +7,7 @@ import json
 import datetime as dt
 import time
 import random
+import math
 import humanize
 from discord.ext.commands import cooldown, BucketType
 import timedelta
@@ -57,17 +58,50 @@ async def stats(ctx: commands.Context, mc_name : str):
                         #######
                         page1 = discord.Embed(title="", color=0xbc2a82)
                         page1.set_author(name=mc_name + " Stats on The Cylone Network")
-                        page1.add_field(name="<a:played:853633469014605824> Matches played", value=(res['user']['matches']), inline=True)
-                        page1.add_field(name="<a:kills:853628582731186177> Kills", value=(res['user']['kills']), inline=True)
-                        page1.add_field(name="<a:deaths:855109742288437250> Deaths", value=(res['user']['deaths']), inline=True)
-                        kd = "{:.2f}".format(k/d)
-                        page1.add_field(name="<a:kd:855110404735893515> K/D", value=kd, inline=True)
-                        page1.add_field(name="<a:level:853628581188337666> Level", value=(res['user']['level']), inline=True)
-                        page1.add_field(name="<a:wins:853628581698600961> Wins", value=(res['user']['wins']), inline=True)
-                        page1.add_field(name="<:loses:853633469070835712> Losses", value=(res['user']['losses']), inline=True)
-                        wl = "{:.2f}".format(win/lost)
-                        page1.add_field(name="<a:wl:855110803082313728> W/L", value=wl, inline=True)
-                        page1.add_field(name="<a:wool:853628583535968286> Wool Destroys", value=(res['user']['wool_destroys']), inline=True)
+                        try:
+                            page1.add_field(name="<a:played:853633469014605824> Matches played", value=(res['user']['matches']), inline=True)
+                        except KeyError:
+                            page1.add_field(name="<a:played:853633469014605824> Matches played", value="None", inline=True)
+                        try:
+                            page1.add_field(name="<a:kills:853628582731186177> Kills", value=(res['user']['kills']), inline=True)
+                        except KeyError:
+                            page1.add_field(name="<a:kills:853628582731186177> Kills", value="None", inline=True)
+                        try:
+                            page1.add_field(name="<a:deaths:855109742288437250> Deaths", value=(res['user']['deaths']), inline=True)
+                        except KeyError:
+                            page1.add_field(name="<a:deaths:855109742288437250> Deaths", value="None", inline=True)
+                        try:
+                            kd = "{:.2f}".format(k/d)
+                        except KeyError:
+                            data = None
+                        try:
+                            page1.add_field(name="<a:kd:855110404735893515> K/D", value=kd, inline=True)
+                        except KeyError:
+                            data = None
+                        try:
+                            page1.add_field(name="<a:level:853628581188337666> Level", value=(res['user']['level']), inline=True)
+                        except KeyError:
+                            page1.add_field(name="<a:level:853628581188337666> Level", value="None", inline=True)
+                        try:
+                            page1.add_field(name="<a:wins:853628581698600961> Wins", value=(res['user']['wins']), inline=True)
+                        except KeyError:
+                            page1.add_field(name="<a:wins:853628581698600961> Wins", value="None", inline=True)
+                        try:
+                            page1.add_field(name="<:loses:853633469070835712> Losses", value=(res['user']['losses']), inline=True)
+                        except KeyError:
+                            page1.add_field(name="<:loses:853633469070835712> Losses", value="None", inline=True)
+                        try:
+                            wl = "{:.2f}".format(win/lost)
+                        except KeyError:
+                            data = None
+                        try:
+                            page1.add_field(name="<a:wl:855110803082313728> W/L", value=wl, inline=True)
+                        except KeyError:
+                            data = None
+                        try:
+                            page1.add_field(name="<a:wool:853628583535968286> Wool Destroys", value=(res['user']['wool_destroys']), inline=True)
+                        except KeyError:
+                            page1.add_field(name="<a:wool:853628583535968286> Wool Destroys", value="None", inline=True)
                         page1.add_field(name="Last Online", value=(timeago.format(ms/1000.0, now, 'en')), inline=True)
                         page1.add_field(name="Join Date", value=(timeago.format(ms2/1000.0, now, 'en')), inline=True)
                         page1.timestamp = datetime.datetime.utcnow()
@@ -81,7 +115,7 @@ async def stats(ctx: commands.Context, mc_name : str):
                             i=0
                             page2 = discord.Embed(title="", color=0xbc2a82)
                             page2.set_author(name=mc_name + " Latest Match Stats")
-                            page2.add_field(name="<a:wool:853628583535968286> Winning Team", value=(res[0]["match"]["winningTeam"].capitalize()), inline=False)
+                            page2.add_field(name="<a:redblue:853636359108558898> Winning Team", value=(res[0]["match"]["winningTeam"].capitalize()), inline=False)
                             page2.add_field(name="<a:match:854808917024309328> Match Size", value=(res[0]["matchSize"]), inline=False)
                             page2.add_field(name="<:maps:853637839064924170> Map", value=(res[0]["loadedMap"]["name"]), inline=False)
                             page2.add_field(name="<a:clock:854800563857784872> Time elapsed", value=(res[0]["timeElapsed"]), inline=True)
@@ -94,6 +128,7 @@ async def stats(ctx: commands.Context, mc_name : str):
         await ctx.send(embed=embedVar, delete_after=5.0)
         await ctx.message.delete()
         pass
+
 
     pages = [page1, page2]
 
@@ -136,17 +171,7 @@ async def stats(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         embedVar = discord.Embed(title=f"Command still on cooldown, try again in {error.retry_after:.2f} seconds!", color=0xFF0000)
         await ctx.send(embed=embedVar, delete_after=3.0)
-        time.sleep(2)
         await ctx.message.delete()
-        time.sleep(2)
-    else:
-        if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
-            embedVar = discord.Embed(title=f"Please provide a player!", color=0xFF0000)
-            await ctx.send(embed=embedVar, delete_after=4.0)
-            time.sleep(2)
-            await ctx.message.delete()
-            time.sleep(2)
-            pass
 
 @client.command()
 async def ping(ctx):

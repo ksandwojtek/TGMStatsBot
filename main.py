@@ -143,23 +143,17 @@ async def stats(ctx: commands.Context, mc_name : str):
     reaction = None
 
     while True:
-        if str(reaction) == '⏮':
-            i = 0
-            await message.edit(embed = pages[i])
-        elif str(reaction) == '◀':
+        if str(reaction) == '◀':
             if i > 0:
                 i -= 1
                 await message.edit(embed = pages[i])
         elif str(reaction) == '▶':
-            if i < 2:
+            if i < 1:
                 i += 1
                 await message.edit(embed = pages[i])
-        elif str(reaction) == '⏭':
-            i = 2
-            await message.edit(embed = pages[i])
-        
+            
         try:
-            reaction, user = await client.wait_for('reaction_add', timeout = 30.0, check = check)
+            reaction, user = await client.wait_for('reaction_add', timeout = 45.0, check = check)
             await message.remove_reaction(reaction, user)
         except:
             break

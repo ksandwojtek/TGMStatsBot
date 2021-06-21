@@ -27,13 +27,52 @@ async def on_ready():
     await client.change_presence(activity=discord.Game(name="CyloneMC.net"))
     print(f'{client.user} has connected to Discord!')
 
-colors = [0x9400D3, 0x4B0082, 0x0000FF, 0x00FF00, 0xFFFF00, 0xFF0000]
+@client.command()
+async def help(ctx: commands.context):
+    if ctx.channel.id == 765849289817456651:
+        async with ctx.typing():
+                        page1 = discord.Embed(title="", color=0xbc2a82)
+                        page1.set_author(name="Cylone Stats Bot Help Menu 1/2")
+                        page1.add_field(name="Stats", value="Displays latest game and player stats on team games", inline=True)
+                        page1.timestamp = datetime.datetime.utcnow()
+                        page1.set_footer(text='Bot Created by ksndq#8052', icon_url="https://cdn.discordapp.com/avatars/431703739913732097/013868d08ceb35bf90fb568bfbd1e854.png?size=64")
+                        page1.set_image(url="https://cdn.discordapp.com/avatars/854744409253216277/fee6f1ed242feb3d465162d8e9e393a4.png?size=128")
+                        ################################################################
+                        page2 = discord.Embed(title="", color=0xbc2a82)
+                        page2.set_author(name="Credit List 2/2")
+                        page2.add_field(name="Main Developer", value="<@431703739913732097> <:ksndq:856587427283337236>", inline=False)
+                        page2.add_field(name="Side Developer", value="<@336363923542376449> <:LordofLightning:856587426985934910>", inline=False)
+                        page2.add_field(name="Tester", value="<@491621008856449044> <:THAWERZ:856589646909669427>", inline=False)
+                        page2.set_footer(text='Bot Created by ksndq#8052', icon_url="https://cdn.discordapp.com/avatars/431703739913732097/013868d08ceb35bf90fb568bfbd1e854.png?size=64")
+    else:
+        embedVar = discord.Embed(title="You can't use that here!", color=0xFF0000)
+        await ctx.send(embed=embedVar, delete_after=5.0)
+        await ctx.message.delete()
+        pass
 
-now = datetime.datetime.now() + datetime.timedelta(seconds = 60 * 3.4)
-
-date = datetime.datetime.now()
-
-########################################################################
+    pages = [page1, page2]
+    message = await ctx.send(embed = page1)
+    await message.add_reaction('◀')
+    await message.add_reaction('▶')
+    def check(reaction, user):
+        return user == ctx.author
+    i = 0
+    reaction = None
+    while True:
+        if str(reaction) == '◀':
+            if i > 0:
+                i -= 1
+                await message.edit(embed = pages[i])
+        elif str(reaction) == '▶':
+            if i < 1:
+                i += 1
+                await message.edit(embed = pages[i])
+        try:
+            reaction, user = await client.wait_for('reaction_add', timeout = 45.0, check = check)
+            await message.remove_reaction(reaction, user)
+        except:
+            break
+    await message.clear_reactions()
 
 @client.command()
 @commands.cooldown(1, 10, commands.BucketType.user)
@@ -124,20 +163,14 @@ async def stats(ctx: commands.Context, mc_name : str):
         await ctx.send(embed=embedVar, delete_after=5.0)
         await ctx.message.delete()
         pass
-
-
     pages = [page1, page2]
-
     message = await ctx.send(embed = page1)
     await message.add_reaction('◀')
     await message.add_reaction('▶')
-
     def check(reaction, user):
         return user == ctx.author
-
     i = 0
     reaction = None
-
     while True:
         if str(reaction) == '◀':
             if i > 0:
@@ -146,14 +179,12 @@ async def stats(ctx: commands.Context, mc_name : str):
         elif str(reaction) == '▶':
             if i < 1:
                 i += 1
-                await message.edit(embed = pages[i])
-            
+                await message.edit(embed = pages[i]) 
         try:
             reaction, user = await client.wait_for('reaction_add', timeout = 45.0, check = check)
             await message.remove_reaction(reaction, user)
         except:
             break
-
     await message.clear_reactions()
 
 @stats.error
@@ -162,10 +193,5 @@ async def stats(ctx, error):
         embedVar = discord.Embed(title=f"Command still on cooldown, try again in {error.retry_after:.2f} seconds!", color=0xFF0000)
         await ctx.send(embed=embedVar, delete_after=3.0)
         await ctx.message.delete()
-
-@client.command()
-async def ping(ctx):
-    if ctx.channel.id == 852546541830012988:
-        await ctx.send(f'Pong! In {round(client.latency * 1000)}ms')
 
 client.run(config["bot"]["token"], reconnect=True)

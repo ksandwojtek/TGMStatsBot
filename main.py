@@ -84,7 +84,7 @@ async def stats(ctx: commands.Context, mc_name : str):
                         res = await r.json()
                         # If the specified user, whether by username, UUID, or playerID does not exist
                         # We inform the user
-                        if res['notFound'] == True:
+                        if 'notFound' in res and res['notFound']:
                             # In the future, we should add something here to look up a player's name on Mojang's servers
                             # Or on NameMC to check if a username has been changed, if so tell the user that the player
                             # Who's stats they're looking up may have changed their name and deal with it appropiately

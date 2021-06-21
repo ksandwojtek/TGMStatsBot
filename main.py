@@ -76,13 +76,41 @@ async def help(ctx: commands.context):
 
 @client.command()
 @commands.cooldown(1, 10, commands.BucketType.user)
-async def stats(ctx: commands.Context, mc_name : str):
+async def stats(ctx: commands.Context, requested_user : str):
     if ctx.channel.id == 765849289817456651:
             async with ctx.typing():
+                flags = ""
+                requested_user_string_length = len(requested_user)
+                # If requested_user is in the form of a Cylone playerID
+                if (requested_user_string_length == 24):
+                    flags += "?byID=true"
+                # If requested_user is in the form of a Minecraft UUID without dashes
+                elif (requested_user_string_length == 32):
+                    requested_user = requested_user[0:8] + "-" \
+                                     + requested_user[8:12] + "-" \
+                                     + requested_user[12:16] + "-" \
+                                     + requested_user[16:20] + "-" \
+                                     + requested_user[20:32]
+                    flags += "?byUUID=true"
+                # If requested_user is in the form of a Minecraft UUID with dashes
+                elif (requested_user_string_length == 36):
+                    flags += "?byUUID=true"
                 async with aiohttp.ClientSession() as cs:
-                    async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + mc_name, ) as r:
+                    async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + requested_user + flags, ) as r:
                         res = await r.json()
+                        # If the specified user, whether by username, UUID, or playerID does not exist
+                        # We inform the user
+                        if 'notFound' in res and res['notFound']:
+                            # In the future, we should add something here to look up a player's name on Mojang's servers
+                            # Or on NameMC to check if a username has been changed, if so tell the user that the player
+                            # Who's stats they're looking up may have changed their name and deal with it appropiately
+                            embedVar = discord.Embed(
+                                title="The user you specified is not in Cylone's database, please check your spelling.",
+                                color=0xFF0000)
+                            await ctx.send(embed=embedVar)
+                            return
                         #######
+                        mc_name = res['user']['name']
                         skin = res['user']['uuid']
                         ms = res['user']['lastOnlineDate']
                         ms2 = res['user']['initialJoinDate']

@@ -6,15 +6,11 @@ import asyncio
 import json
 import datetime as dt
 import time
-import random
-import math
-import humanize
+from ago import human
+from ago import delta2dict
+from datetime import datetime
 from discord.ext.commands import cooldown, BucketType
-import timedelta
-import pprint
 import datetime
-import timeago, datetime
-from datetime import date, timedelta
 from discord.ext import commands
 
 intents = discord.Intents.all()
@@ -57,7 +53,7 @@ async def stats(ctx: commands.Context, mc_name : str):
                         d = res['user']['deaths']
                         #######
                         page1 = discord.Embed(title="", color=0xbc2a82)
-                        page1.set_author(name=mc_name + " Stats on The Cylone Network")
+                        page1.set_author(name=mc_name + " Stats on The Cylone Network 1/2")
                         try:
                             page1.add_field(name="<a:played:853633469014605824> Matches played", value=(res['user']['matches']), inline=True)
                         except KeyError:
@@ -102,8 +98,8 @@ async def stats(ctx: commands.Context, mc_name : str):
                             page1.add_field(name="<a:wool:853628583535968286> Wool Destroys", value=(res['user']['wool_destroys']), inline=True)
                         except KeyError:
                             page1.add_field(name="<a:wool:853628583535968286> Wool Destroys", value="None", inline=True)
-                        page1.add_field(name="Last Online", value=(timeago.format(ms/1000.0, now, 'en')), inline=True)
-                        page1.add_field(name="Join Date", value=(timeago.format(ms2/1000.0, now, 'en')), inline=True)
+                        page1.add_field(name="Last Online", value=human(ms/1000.0), inline=True)
+                        page1.add_field(name="Join Date", value=human(ms2/1000.0), inline=True)
                         page1.timestamp = datetime.datetime.utcnow()
                         page1.set_footer(text='Bot Created by ksndq#8052', icon_url="https://cdn.discordapp.com/avatars/431703739913732097/013868d08ceb35bf90fb568bfbd1e854.png?size=64")
                         page1.set_image(url='https://crafatar.com/renders/head/' + skin)
@@ -114,7 +110,7 @@ async def stats(ctx: commands.Context, mc_name : str):
                             ms3 = res[0]['match']['startedDate']
                             i=0
                             page2 = discord.Embed(title="", color=0xbc2a82)
-                            page2.set_author(name=mc_name + " Latest Match Stats")
+                            page2.set_author(name=mc_name + " Latest Match Stats 2/2")
                             page2.add_field(name="<a:redblue:853636359108558898> Winning Team", value=(res[0]["match"]["winningTeam"].capitalize()), inline=False)
                             page2.add_field(name="<a:match:854808917024309328> Match Size", value=(res[0]["matchSize"]), inline=False)
                             page2.add_field(name="<:maps:853637839064924170> Map", value=(res[0]["loadedMap"]["name"]), inline=False)

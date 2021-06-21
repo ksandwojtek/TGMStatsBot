@@ -82,6 +82,17 @@ async def stats(ctx: commands.Context, mc_name : str):
                 async with aiohttp.ClientSession() as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + mc_name, ) as r:
                         res = await r.json()
+                        # If the specified user, whether by username, UUID, or playerID does not exist
+                        # We inform the user
+                        if res['notFound'] == True:
+                            # In the future, we should add something here to look up a player's name on Mojang's servers
+                            # Or on NameMC to check if a username has been changed, if so tell the user that the player
+                            # Who's stats they're looking up may have changed their name and deal with it appropiately
+                            embedVar = discord.Embed(
+                                title="The user you specified is not in Cylone's database, please check your spelling.",
+                                color=0xFF0000)
+                            await ctx.send(embed=embedVar)
+                            return
                         #######
                         skin = res['user']['uuid']
                         ms = res['user']['lastOnlineDate']

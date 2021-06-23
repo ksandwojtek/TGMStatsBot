@@ -107,7 +107,8 @@ async def stats(ctx: commands.Context, requested_user : str):
                             embedVar = discord.Embed(
                                 title="The user you specified is not in Cylone's database, please check your spelling.",
                                 color=0xFF0000)
-                            await ctx.send(embed=embedVar)
+                            await ctx.send(embed=embedVar, delete_after=5.0)
+                            await ctx.message.delete()
                             return
                         #######
                         mc_name = res['user']['name']

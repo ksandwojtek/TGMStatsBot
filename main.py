@@ -244,6 +244,4 @@ async def help(ctx : SlashContext):
                 break
         await message.clear_reactions()
 
-
-
 client.run(config["bot"]["token"], reconnect=True)

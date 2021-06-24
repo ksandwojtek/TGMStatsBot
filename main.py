@@ -1,16 +1,11 @@
 #!python
 
-
 import discord
-
 import os
-
 
 import json
 import argparse
 from discord.ext import commands
-
-# If for whatever reason you load another c
 from GlobalVariables import GlobalVariables
 
 
@@ -51,57 +46,8 @@ if __name__ == "__main__":
 
 
     @client.event
-
     async def on_ready():
-
         await client.change_presence(activity=discord.Game(name="CyloneMC.net"))
-
         print(f'{client.user} has connected to Discord!')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     client.run(config["bot"]["token"], reconnect=True)

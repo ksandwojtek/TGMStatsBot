@@ -1,8 +1,8 @@
 {
   "bot": {
     "token": "token",
-    "prefix": "*"
+    "prefix": "*",
+    "channel": "765849289817456651"
  }
 }
-
 

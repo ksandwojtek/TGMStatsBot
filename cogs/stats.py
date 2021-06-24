@@ -1,4 +1,3 @@
-
 import discord
 
 import aiohttp
@@ -16,14 +15,12 @@ from GlobalVariables import GlobalVariables
 
 class Stats(commands.Cog):
 
-
     def __init__(self, client):
 
         self.client = client
         self.global_variables = GlobalVariables()
 
     @commands.command()
-
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def stats(self, ctx: commands.context, requested_user: str):
         if ctx.channel.id == self.global_variables.config['bot']['channel']:
@@ -56,10 +53,10 @@ class Stats(commands.Cog):
                             # Or on NameMC to check if a username has been changed, if so tell the user that the player
 
                             # Who's stats they're looking up may have changed their name and deal with it appropiately
-                            embedVar = discord.Embed(
+                            embed_var = discord.Embed(
                                 title="The user you specified is not in Cylone's database, please check your spelling.",
                                 color=0xFF0000)
-                            await ctx.send(embed=embedVar, delete_after=5.0)
+                            await ctx.send(embed=embed_var, delete_after=5.0)
                             await ctx.message.delete()
                             return
                         #######
@@ -156,58 +153,38 @@ class Stats(commands.Cog):
                                              icon_url="https://cdn.discordapp.com/avatars/431703739913732097/013868d08ceb35bf90fb568bfbd1e854.png?size=64")
                             page2.set_image(url='https://crafatar.com/renders/head/' + skin)
         else:
-
-            embedVar = discord.Embed(title="You can't use that here!", color=0xFF0000)
-
-            await ctx.send(embed=embedVar, delete_after=5.0)
-
-            await ctx.message.delete()
-
+            embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
+            await ctx.send(embed=embed_var)
             pass
-
 
         pages = [page1, page2]
         message = await ctx.send(embed=page1)
         await message.add_reaction('◀')
-
         await message.add_reaction('▶')
 
         def check(reaction, user):
-
             return user == ctx.author
 
         i = 0
-
         reaction = None
 
         while True:
-
             if str(reaction) == '◀':
-
                 if i > 0:
-
                     i -= 1
                     await message.edit(embed=pages[i])
             elif str(reaction) == '▶':
-
                 if i < 1:
-
                     i += 1
                     await message.edit(embed=pages[i])
             try:
                 reaction, user = await self.client.wait_for('reaction_add', timeout=45.0, check=check)
                 await message.remove_reaction(reaction, user)
-
             except Exception as e:
-
                 print(e)
-
                 break
-
         await message.clear_reactions()
 
 
-
 def setup(client):
-
     client.add_cog(Stats(client))

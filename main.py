@@ -1,12 +1,17 @@
 #!python
 
+
 import discord
+
 import os
+
 
 import json
 import argparse
+
 from discord.ext import commands
 from GlobalVariables import GlobalVariables
+
 
 
 if __name__ == "__main__":
@@ -17,6 +22,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     with open("./config.json", mode="r") as fl:
+
         config = json.loads(fl.read())
 
     if args.token is not None:
@@ -28,26 +34,51 @@ if __name__ == "__main__":
     global_variables.set_config(config)
 
 
+
     intents = discord.Intents.all()
     client = commands.Bot(command_prefix=config["bot"]["prefix"], intents=intents, case_insensitive=True)
 
     client.remove_command('help')
 
+
     for filename in os.listdir('./cogs'):
+
         if filename.endswith('.py'):
+
             client.load_extension(f'cogs.{filename[:-3]}')
 
+
         else:
+
             print(f'Unable to load {filename[:-3]}')
 
+
     Cogs = client.cogs
+
     for NameOfCog, TheClassOfCog in Cogs.items():
+
         print(NameOfCog)
 
 
+
     @client.event
+
     async def on_ready():
+
         await client.change_presence(activity=discord.Game(name="CyloneMC.net"))
+
         print(f'{client.user} has connected to Discord!')
+
+
+guild_ids = [754890606173487154]
+
+@slash.slash(name = 'Stats', description = 'Displays player stats on team games', guild_ids=guild_ids, options = options)
+
+@slash.slash(name = 'Help', description = 'Displays the help menu and credits', guild_ids=guild_ids)
+
+
+
+
+
 
     client.run(config["bot"]["token"], reconnect=True)

@@ -45,7 +45,7 @@ async def on_ready():
     await client.change_presence(activity=discord.Game(name="CyloneMC.net"))
     print(f'{client.user} has connected to Discord!')
 
-
+guild_ids = [754890606173487154]
 
 ########################################################
 options = [
@@ -57,7 +57,7 @@ options = [
     }
 ]
 
-@slash.slash(name = 'Stats', description = 'Displays player stats on team games', guild_ids = [754890606173487154], options = options)
+@slash.slash(name = 'Stats', description = 'Displays player stats on team games', guild_ids=guild_ids, options = options)
 async def stats(ctx : SlashContext, requested_user : str, name = ' '):
         if ctx.channel.id == 765849289817456651:
                     flags = ""
@@ -198,7 +198,7 @@ async def stats(ctx : SlashContext, requested_user : str, name = ' '):
                 break
         await message.clear_reactions()
 ##############################################
-@slash.slash(name = 'Help', description = 'Displays the help menu and credits', guild_ids = [754890606173487154])
+@slash.slash(name = 'Help', description = 'Displays the help menu and credits', guild_ids=guild_ids)
 async def help(ctx : SlashContext):
         if ctx.channel.id == 765849289817456651:
                             page1 = discord.Embed(title="", color=0xbc2a82)
@@ -243,5 +243,7 @@ async def help(ctx : SlashContext):
             except:
                 break
         await message.clear_reactions()
+
+
 
 client.run(config["bot"]["token"], reconnect=True)

@@ -1,17 +1,10 @@
-
 import discord
-
 import aiohttp
 
-
 from ago import human
-
 from datetime import datetime
-
 import datetime
-
 from discord.ext import commands
-
 from GlobalVariables import GlobalVariables
 
 

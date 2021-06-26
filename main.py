@@ -1,32 +1,23 @@
 #!python
-import slash as slash
-from discord_slash.model import ComponentCallbackObject
-import requests
 import discord
 import os
 import aiohttp
-import asyncio
 import json
 import argparse
-import datetime as dt
-import time
 from ago import human
-from ago import delta2dict
 from datetime import datetime
-from discord.ext.commands import cooldown, BucketType
 import datetime
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext, context
-from discord.ext.commands import has_permissions
 
 from GlobalVariables import GlobalVariables
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Runs an instance of the Cylone Stat Bot")
     parser.add_argument("-t", "--token", nargs="?", type=str, help="Discord bot token")
     parser.add_argument("-c", "--channel", nargs="?", type=int, help="Channel ID where the Discord Bot will respond "
                                                                      "to queries")
+    parser.add_argument("-g", "--guild", nargs="?", type=int, help="ID of the Guild/Server that the bot is in.")
     args = parser.parse_args()
 
     with open("./config.json", mode="r") as fl:
@@ -37,6 +28,8 @@ if __name__ == "__main__":
         config["bot"]["token"] = args.token
     if args.channel is not None:
         config["bot"]["channel"] = args.channel
+    if args.guild is not None:
+        config['bot']['guild'] = [args.guild]
 
     global_variables = GlobalVariables()
     global_variables.set_config(config)
@@ -44,8 +37,9 @@ if __name__ == "__main__":
     intents = discord.Intents.all()
     client = commands.Bot(command_prefix=config["bot"]["prefix"], intents=intents, case_insensitive=True)
 
-    client.remove_command('help')
+    slash = SlashCommand(client, sync_commands=True)
 
+    client.remove_command('help')
 
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
@@ -57,29 +51,28 @@ if __name__ == "__main__":
     for NameOfCog, TheClassOfCog in Cogs.items():
         print(NameOfCog)
 
+        @client.event
+        async def on_ready():
+            await client.change_presence(activity=discord.Game(name="CyloneMC.net"))
+            print(f'{client.user} has connected to Discord!')
 
 
-    @client.event
-    async def on_ready():
-        await client.change_presence(activity=discord.Game(name="CyloneMC.net"))
-        print(f'{client.user} has connected to Discord!')
+        guild_ids = global_variables.config['bot']['guild']
+        ########################################################
+        options = [
+            {
+                "name": "requested_user",
+                "description": "Your Minecraft name",
+                "required": True,
+                "type": 3
+            }
+        ]
 
 
-    guild_ids = [754890606173487154]
-    ########################################################
-    options = [
-        {
-            "name": "requested_user",
-            "description": "Your Minecraft name",
-            "required": True,
-            "type": 3
-        }
-    ]
-
-
-    @slash.slash(name='Stats', description='Displays player stats on team games', guild_ids=guild_ids, options=options)
+    @slash.slash(name='Stats', description='Displays player stats on team games', guild_ids=guild_ids,
+                 options=options)
     async def stats(ctx: SlashContext, requested_user: str, name=' '):
-        if ctx.channel.id == 765849289817456651:
+        if ctx.channel.id == global_variables.config['bot']['channel']:
             flags = ""
             requested_user_string_length = len(requested_user)
             # If requested_user is in the form of a Cylone playerID
@@ -126,7 +119,8 @@ if __name__ == "__main__":
                         page1.add_field(name="<a:played:853633469014605824> Matches played",
                                         value=(res['user']['matches']), inline=True)
                     except KeyError:
-                        page1.add_field(name="<a:played:853633469014605824> Matches played", value="None", inline=True)
+                        page1.add_field(name="<a:played:853633469014605824> Matches played", value="None",
+                                        inline=True)
                     try:
                         page1.add_field(name="<a:kills:853628582731186177> Kills", value=(res['user']['kills']),
                                         inline=True)
@@ -193,10 +187,12 @@ if __name__ == "__main__":
                                         inline=False)
                         page2.add_field(name="<:maps:853637839064924170> Map", value=(res[0]["loadedMap"]["name"]),
                                         inline=False)
-                        page2.add_field(name="<a:clock:854800563857784872> Time elapsed", value=(res[0]["timeElapsed"]),
+                        page2.add_field(name="<a:clock:854800563857784872> Time elapsed",
+                                        value=(res[0]["timeElapsed"]),
                                         inline=True)
                         page2.add_field(name="Started", value=(
-                            datetime.datetime.fromtimestamp(ms3 / 1000.0).strftime('%m-%d • %H:%M:%S')), inline=True)
+                            datetime.datetime.fromtimestamp(ms3 / 1000.0).strftime('%m-%d • %H:%M:%S')),
+                                        inline=True)
                         page2.timestamp = datetime.datetime.utcnow()
                         page2.set_footer(text='Bot Created by ksndq and LordofLightning',
                                          icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
@@ -237,7 +233,7 @@ if __name__ == "__main__":
     ##############################################
     @slash.slash(name='Help', description='Displays the help menu and credits', guild_ids=guild_ids)
     async def help(ctx: SlashContext):
-        if ctx.channel.id == 765849289817456651:
+        if ctx.channel.id == global_variables.config['bot']['channel']:
             page1 = discord.Embed(title="", color=0xbc2a82)
             page1.set_author(name="Cylone Stats Bot Help Menu 1/2")
             page1.add_field(name="Stats", value="Displays latest game and player stats on team games", inline=True)
@@ -251,9 +247,11 @@ if __name__ == "__main__":
             page2.set_author(name="Credit List 2/2")
             page2.add_field(name="Main Developer", value="<@431703739913732097> <:ksndq:856587427283337236>",
                             inline=False)
-            page2.add_field(name="Side Developer", value="<@336363923542376449> <:LordofLightning:856587426985934910>",
+            page2.add_field(name="Side Developer",
+                            value="<@336363923542376449> <:LordofLightning:856587426985934910>",
                             inline=False)
-            page2.add_field(name="Tester", value="<@491621008856449044> <:THAWERZ:856589646909669427>", inline=False)
+            page2.add_field(name="Tester", value="<@491621008856449044> <:THAWERZ:856589646909669427>",
+                            inline=False)
             page2.set_footer(text='Bot Created by ksndq and LordofLightning',
                              icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
         else:
@@ -287,6 +285,5 @@ if __name__ == "__main__":
                 print(e)
                 break
         await message.clear_reactions()
-
 
     client.run(config["bot"]["token"], reconnect=True)

@@ -17,7 +17,7 @@ class Stats(commands.Cog):
         self.client = client
         self.global_variables = GlobalVariables()
 
-    @commands.command(aliases=['stat'])
+    @commands.command(aliases=['stats'])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def stats(self, ctx: commands.context, requested_user: str):
         if ctx.channel.id == self.global_variables.config['bot']['channel']:

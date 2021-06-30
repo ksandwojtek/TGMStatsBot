@@ -12,7 +12,7 @@ from datetime import datetime
 from discord.ext.commands import cooldown, BucketType
 import datetime
 from discord.ext import commands
-from GlobalVariables import GlobalVariables
+from globalvariables import GlobalVariables
 
 class Help(commands.Cog):
 
@@ -27,18 +27,18 @@ class Help(commands.Cog):
     @commands.command(aliases=['halp'])
     async def help(self, ctx: commands.context):
         if ctx.channel.id == self.global_variables.config['bot']['channel']:
-
             async with ctx.typing():
-
                 page1 = discord.Embed(title="", color=0xbc2a82)
                 page1.set_author(name="Cylone Stats Bot Help Menu 1/2")
-                page1.add_field(name="Stats", value="Displays latest game and player stats on team games.", inline=False)
+                page1.add_field(name="Stats", value="Displays latest game and player stats on team games.",
+                                inline=False)
                 page1.add_field(name="Lb/Leaderboard", value="Displays various team games leaderboards.", inline=False)
 
 
                 page1.timestamp = datetime.datetime.utcnow()
                 page1.set_footer(text='Bot Created by ksndq#8052',
-                                 icon_url="https://cdn.discordapp.com/avatars/431703739913732097/013868d08ceb35bf90fb568bfbd1e854.png?size=64")
+                                 icon_url="https://cdn.discordapp.com/avatars/431703739913732097"
+                                          "/013868d08ceb35bf90fb568bfbd1e854.png?size=64")
 
                 ################################################################
 
@@ -52,7 +52,8 @@ class Help(commands.Cog):
                 page2.add_field(name="Tester", value="<@491621008856449044> <:THAWERZ:856589646909669427>",
                                 inline=False)
                 page2.set_footer(text='Bot Created by ksndq#8052 and LordofLightning',
-                                 icon_url="https://cdn.discordapp.com/avatars/431703739913732097/013868d08ceb35bf90fb568bfbd1e854.png?size=64")
+                                 icon_url="https://cdn.discordapp.com/avatars/431703739913732097"
+                                          "/013868d08ceb35bf90fb568bfbd1e854.png?size=64")
         else:
             embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
             await ctx.send(embed=embed_var)

@@ -5,6 +5,6 @@
 # the exiting page.add_field(name=..., value=..., etc...) headers
 class EmbedField:
 
-    def __init__(self, name : str, value):
+    def __init__(self, name: str, value):
         self.name = name
         self.value = value

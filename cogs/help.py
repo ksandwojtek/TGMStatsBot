@@ -14,6 +14,7 @@ import datetime
 from discord.ext import commands
 from globalvariables import GlobalVariables
 
+
 class Help(commands.Cog):
 
     def __init__(self, client):
@@ -34,14 +35,12 @@ class Help(commands.Cog):
                                 inline=False)
                 page1.add_field(name="Lb/Leaderboard", value="Displays various team games leaderboards.", inline=False)
 
-
                 page1.timestamp = datetime.datetime.utcnow()
                 page1.set_footer(text='Bot Created by ksndq#8052',
                                  icon_url="https://cdn.discordapp.com/avatars/431703739913732097"
                                           "/013868d08ceb35bf90fb568bfbd1e854.png?size=64")
 
                 ################################################################
-
 
                 page2 = discord.Embed(title="", color=0xbc2a82)
                 page2.set_author(name="Credit List 2/2")

@@ -86,7 +86,9 @@ class Stats(commands.Cog):
                                 page1.add_field(name=field.name, value="N/A", inline=True)
 
                         page1.timestamp = datetime.datetime.utcnow()
-                        page1.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+                        page1.set_footer(text='Bot Created by ksndq and LordofLightning',
+                                         icon_url="https://cdn.discordapp.com/icons/754890606173487154"
+                                                  "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                         page1.set_image(url='https://crafatar.com/renders/head/' + skin)
                     ################################################################
                     async with cs.get('https://tgmapi.cylonemc.net/mc/match/latest/' + mc_name, ) as r:
@@ -112,7 +114,9 @@ class Stats(commands.Cog):
                                 page2.add_field(name=field.name, value="N/A", inline=True)
 
                         page2.timestamp = datetime.datetime.utcnow()
-                        page2.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+                        page2.set_footer(text='Bot Created by ksndq and LordofLightning',
+                                         icon_url="https://cdn.discordapp.com/icons/754890606173487154"
+                                                  "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                         page2.set_image(url='https://crafatar.com/renders/head/' + skin)
         else:
             embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)

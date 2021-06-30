@@ -2,3 +2,4 @@ venv/
 main-dev.py
 .idea/
 cogs/__pycache__
+__pycache__/

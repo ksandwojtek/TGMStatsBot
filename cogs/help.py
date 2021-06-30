@@ -25,7 +25,7 @@ class Help(commands.Cog):
     async def on_ready(self):
         print('test')
 
-    @commands.command(aliases=['halp'])
+    @commands.command(aliases=['help'])
     async def help(self, ctx: commands.context):
         if ctx.channel.id == self.global_variables.config['bot']['channel']:
             async with ctx.typing():

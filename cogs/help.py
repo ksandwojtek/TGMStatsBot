@@ -36,23 +36,22 @@ class Help(commands.Cog):
                 page1.add_field(name="Lb/Leaderboard", value="Displays various team games leaderboards.", inline=False)
 
                 page1.timestamp = datetime.datetime.utcnow()
-                page1.set_footer(text='Bot Created by ksndq#8052',
-                                 icon_url="https://cdn.discordapp.com/avatars/431703739913732097"
-                                          "/013868d08ceb35bf90fb568bfbd1e854.png?size=64")
+                page1.set_footer(text='Bot Created by ksndq and LordofLightning',
+                                 icon_url="https://cdn.discordapp.com/icons/754890606173487154"
+                                          "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
 
                 ################################################################
 
                 page2 = discord.Embed(title="", color=0xbc2a82)
                 page2.set_author(name="Credit List 2/2")
-                page2.add_field(name="Main Developer", value="<@431703739913732097> <:ksndq:856587427283337236>",
+                page2.add_field(name="Developers", value="<@431703739913732097> <:ksndq:856587427283337236> and "
+                                                         "<@336363923542376449> <:LordofLightning:856587426985934910>",
                                 inline=False)
-                page2.add_field(name="Co Developer",
-                                value="<@336363923542376449> <:LordofLightning:856587426985934910>", inline=False)
                 page2.add_field(name="Tester", value="<@491621008856449044> <:THAWERZ:856589646909669427>",
                                 inline=False)
-                page2.set_footer(text='Bot Created by ksndq#8052 and LordofLightning',
-                                 icon_url="https://cdn.discordapp.com/avatars/431703739913732097"
-                                          "/013868d08ceb35bf90fb568bfbd1e854.png?size=64")
+                page2.set_footer(text='Bot Created by ksndq and LordofLightning',
+                                 icon_url="https://cdn.discordapp.com/icons/754890606173487154"
+                                          "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
         else:
             embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
             await ctx.send(embed=embed_var)

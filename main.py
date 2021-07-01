@@ -37,6 +37,7 @@ if __name__ == "__main__":
 
     intents = discord.Intents.all()
     client = commands.Bot(command_prefix=config["bot"]["prefix"], intents=intents, case_insensitive=True)
+    global_variables.set_client(client)
 
     slash = SlashCommand(client, sync_commands=True)
 
@@ -183,20 +184,21 @@ if __name__ == "__main__":
         reaction = None
         while True:
             if str(reaction) == '◀':
-                if i > 0:
-                    i -= 1
-                    await message.edit(embed=pages[i])
+                if message.id == reaction.message.id:
+                    if i > 0:
+                        i -= 1
+                        await message.edit(embed=pages[i])
             elif str(reaction) == '▶':
-                if i < 1:
-                    i += 1
-                    await message.edit(embed=pages[i])
+                if message.id == reaction.message.id:
+                    if i < 1:
+                        i += 1
+                        await message.edit(embed=pages[i])
             try:
                 reaction, user = await client.wait_for('reaction_add', timeout=45.0, check=check)
                 await message.remove_reaction(reaction, user)
             except Exception as e:
                 print(e)
                 break
-        await message.clear_reactions()
 
 
     ##############################################
@@ -243,20 +245,21 @@ if __name__ == "__main__":
         reaction = None
         while True:
             if str(reaction) == '◀':
-                if i > 0:
-                    i -= 1
-                    await message.edit(embed=pages[i])
+                if message.id == reaction.message.id:
+                    if i > 0:
+                        i -= 1
+                        await message.edit(embed=pages[i])
             elif str(reaction) == '▶':
-                if i < 1:
-                    i += 1
-                    await message.edit(embed=pages[i])
+                if message.id == reaction.message.id:
+                    if i < 1:
+                        i += 1
+                        await message.edit(embed=pages[i])
             try:
                 reaction, user = await client.wait_for('reaction_add', timeout=45.0, check=check)
                 await message.remove_reaction(reaction, user)
             except Exception as e:
                 print(e)
                 break
-        await message.clear_reactions()                  
 
     ##############################################
     @slash.slash(name='Leaderboard', description='Displays team games leaderboards', guild_ids=guild_ids)
@@ -390,22 +393,46 @@ if __name__ == "__main__":
 
         i = 0
         reaction = None
-
         while True:
             if str(reaction) == '◀':
-                if i > 0:
-                    i -= 1
-                    await message.edit(embed=pages[i])
+                if message.id == reaction.message.id:
+                    if i > 0:
+                        i -= 1
+                        await message.edit(embed=pages[i])
             elif str(reaction) == '▶':
-                if i < 3:
-                    i += 1
-                    await message.edit(embed=pages[i])
-            try:
-                reaction, user = await client.wait_for('reaction_add', timeout=45.0, check=check)
-                await message.remove_reaction(reaction, user)
-            except Exception as e:
-                print(e)
-                break
-        await message.clear_reactions()                                                                                   
+                if message.id == reaction.message.id:
+                    if i < 1:
+                        i += 1
+                        await message.edit(embed=pages[i])
+
+
+    @global_variables.client.event
+    async def on_reaction_add(reaction, user):
+
+        def correct_message_get_and_check(reaction_message_id, user):
+            if not global_variables.messages:
+                return None
+            for message in global_variables.messages:
+                if message['message'].id == reaction_message_id and user == message['author']:
+                    return message
+            return None
+
+        message_dict = correct_message_get_and_check(reaction.message.id, user)
+        if message_dict is None:
+            return
+
+        if str(reaction) == '◀':
+            if message_dict['page_number'] > 0:
+                message_dict['page_number'] -= 1
+                await message_dict['message'].edit(embed=message_dict['pages'][message_dict['page_number']])
+        elif str(reaction) == '▶':
+            if message_dict['page_number'] < len(message_dict['pages']) - 1:
+                message_dict['page_number'] += 1
+                await message_dict['message'].edit(embed=message_dict['pages'][message_dict['page_number']])
+        try:
+            # reaction, user = await global_variables.client.wait_for('reaction_add', timeout=45.0)
+            await message_dict['message'].remove_reaction(reaction, user)
+        except Exception as e:
+            print(e)
 
     client.run(config["bot"]["token"], reconnect=True)

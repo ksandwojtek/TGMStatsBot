@@ -62,28 +62,7 @@ class Help(commands.Cog):
         message = await ctx.send(embed=page1)
         await message.add_reaction('◀')
         await message.add_reaction('▶')
-
-        def check(reaction, user):
-            return user == ctx.author
-
-        i = 0
-        reaction = None
-        while True:
-            if str(reaction) == '◀':
-                if i > 0:
-                    i -= 1
-                    await message.edit(embed=pages[i])
-            elif str(reaction) == '▶':
-                if i < 1:
-                    i += 1
-                    await message.edit(embed=pages[i])
-            try:
-                reaction, user = await self.client.wait_for('reaction_add', timeout=45.0, check=check)
-                await message.remove_reaction(reaction, user)
-            except Exception as e:
-                print(e)
-                break
-        await message.clear_reactions()
+        self.global_variables.messages.append({"message": message, "author": ctx.author, "pages": pages, "page_number": 0})
 
 
 def setup(client):

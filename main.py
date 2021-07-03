@@ -45,10 +45,14 @@ if __name__ == "__main__":
 
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
-            client.load_extension(f'cogs.{filename[:-3]}')
-            print(f'Loaded {filename[:-3]}')
+            try:
+                client.load_extension(f'cogs.{filename[:-3]}')
+                print(f'Loaded command \"{filename[:-3]}\"')
+            except Exception as e:
+                print(e)
         else:
-            print(f'Unable to load {filename[:-3]}')
+            # print(f'Unable to load {filename[:-3]}')
+            pass
 
         @client.event
         async def on_ready():
@@ -218,10 +222,8 @@ if __name__ == "__main__":
             ################################################################
             page2 = discord.Embed(title="", color=0xbc2a82)
             page2.set_author(name="Credit List 2/2")
-            page2.add_field(name="Main Developer", value="<@431703739913732097> <:ksndq:856587427283337236>",
-                            inline=False)
-            page2.add_field(name="Co-Developer",
-                            value="<@336363923542376449> <:LordofLightning:856587426985934910>",
+            page2.add_field(name="Developers", value="<@431703739913732097> <:ksndq:856587427283337236> and "
+                                                     "<@336363923542376449> <:LordofLightning:856587426985934910>",
                             inline=False)
             page2.add_field(name="Tester", value="<@491621008856449044> <:THAWERZ:856589646909669427>",
                             inline=False)
@@ -434,5 +436,6 @@ if __name__ == "__main__":
             await message_dict['message'].remove_reaction(reaction, user)
         except Exception as e:
             print(e)
+
 
     client.run(config["bot"]["token"], reconnect=True)

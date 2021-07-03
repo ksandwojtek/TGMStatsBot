@@ -23,7 +23,7 @@ class Help(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print('test')
+        pass
 
     @commands.command(aliases=['halp'])
     async def help(self, ctx: commands.context):

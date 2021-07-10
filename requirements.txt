@@ -28,3 +28,5 @@ typing-extensions>=3.10.0.0
 urllib3>=1.26.5
 yarl>=1.6.3
 discord-py-slash-command>=1.6.0
+mcstatus>=6.4.0
+python-decouple>=3.4

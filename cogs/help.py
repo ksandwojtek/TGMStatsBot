@@ -27,7 +27,7 @@ class Help(commands.Cog):
 
     @commands.command(aliases=['halp'])
     async def help(self, ctx: commands.context):
-        if ctx.channel.id == self.global_variables.config['bot']['channels']:
+        if ctx.channel.id in self.global_variables.config['bot']['channels']:
             async with ctx.typing():
                 page1 = discord.Embed(title="", color=0xbc2a82)
                 page1.set_author(name="Cylone Stats Bot Help Menu 1/2")

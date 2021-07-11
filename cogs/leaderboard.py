@@ -36,7 +36,7 @@ class Leaderboard(commands.Cog):
     @commands.command(aliases=["lb", "leaderboards"])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def leaderboard(self, ctx: commands.context):
-        if ctx.channel.id == self.global_variables.config['bot']['channels']:
+        if ctx.channel.id in self.global_variables.config['bot']['channels']:
             async with ctx.typing():
                 async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/kills') as r:

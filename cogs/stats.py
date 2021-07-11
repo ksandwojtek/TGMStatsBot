@@ -20,7 +20,7 @@ class Stats(commands.Cog):
     @commands.command(aliases=['stat'])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def stats(self, ctx: commands.context, requested_user: str):
-        if ctx.channel.id == self.global_variables.config['bot']['channels']:
+        if ctx.channel.id in self.global_variables.config['bot']['channels']:
             async with ctx.typing():
                 flags = ""
                 requested_user_string_length = len(requested_user)

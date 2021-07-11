@@ -15,16 +15,18 @@ from globalvariables import GlobalVariables
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Runs an instance of the Cylone Stat Bot")
-    parser.add_argument("-t", "--token", nargs="?", type=str, help="Discord bot token")
-    parser.add_argument("-c", "--channel", nargs="?", type=int, help="Channel ID where the Discord Bot will respond "
+    parser.add_argument("-t", "--token", nargs=1, type=str, help="Discord bot token")
+    parser.add_argument("-c", "--channel", nargs="*", type=int, help="Channel ID where the Discord Bot will respond "
                                                                      "to queries")
-    parser.add_argument("-g", "--guild", nargs="?", type=int, help="ID of the Guild/Server that the bot is in.")
+    parser.add_argument("-g", "--guild", nargs=1, type=int, help="ID of the Guild/Server that the bot is in.")
+
     args = parser.parse_args()
 
     with open("./config.json", mode="r") as fl:
 
         config = json.loads(fl.read())
 
+    args_to_check = ["token", "channel", "guild"]
     if args.token is not None:
         config["bot"]["token"] = args.token
     if args.channel is not None:

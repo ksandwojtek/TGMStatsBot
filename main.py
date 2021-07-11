@@ -2,6 +2,7 @@
 import discord
 import os
 import aiohttp
+from aiohttp_socks import ProxyConnector
 import json
 import argparse
 from ago import human
@@ -16,9 +17,26 @@ from globalvariables import GlobalVariables
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Runs an instance of the Cylone Stat Bot")
     parser.add_argument("-t", "--token", nargs=1, type=str, help="Discord bot token")
-    parser.add_argument("-c", "--channel", nargs="*", type=int, help="Channel ID where the Discord Bot will respond "
-                                                                     "to queries")
-    parser.add_argument("-g", "--guild", nargs=1, type=int, help="ID of the Guild/Server that the bot is in.")
+    parser.add_argument("-c", "--channels", nargs="+", type=int, help="Channel ID(s) where the Discord Bot will respond"
+                                                                     " to queries")
+    parser.add_argument("-g", "--guilds", nargs="+", type=int, help="ID of the Guilds/Servers that the bot should "
+                                                                    "respond in. "
+                                                                    "The bot must be in those servers for it to work.")
+    parser.add_argument("-p", "--proxy", nargs=1, type=str, help="URL of the proxy to send requests through. "
+                                                                   "Supports HTTP, and SOCKS4/5 proxies. Pass in "
+                                                                   "protocol://user:password@IP:Port format. Both the "
+                                                                   "user and password parts are optional. For example "
+                                                                   "to proxy the bot through TOR use "
+                                                                   "socks5://127.0.0.1:9050 as the proxy")
+    rdns_feature = parser.add_mutually_exclusive_group(required=False)
+    rdns_feature.add_argument('--redirect-dns', dest='rdns', action='store_true', help="Redirects DNS requests through "
+                                                                                       "the proxy, highly recommend "
+                                                                                       "for when using TOR. Default"
+                                                                                       "action is to use system DNS.")
+    rdns_feature.add_argument('--use-system-dns', dest='rdns', action='store_false', help="Uses system DNS to resolve"
+                                                                                          "DNS requests. Default action"
+                                                                                          "is to do this.")
+    parser.set_defaults(rdns=False)
 
     args = parser.parse_args()
 
@@ -26,13 +44,29 @@ if __name__ == "__main__":
 
         config = json.loads(fl.read())
 
-    args_to_check = ["token", "channel", "guild"]
+    # args_to_check = ["token", "channel", "guild"]
     if args.token is not None:
+        # The documentation for argparse is incorrect, nargs=1 passes in data as a list even if it limits the list to
+        # a size of 1 entry, as a result, we must cast the list to an int for the token
+        # While it would be easier to just set config['bot']['token'] = args.token[0]
+        # I would like to attempt to fix this in argparse itself or at least find a different nargs value to make a more
+        # elegant workaround, this code will work if that change happens and if it does, I will delete this
+        if type(args.token) == list and len(args.token) == 1:
+            args.token = args.token[0]
+        else:
+            print("Argparse behaviour broken again, debug variable values to find the issue")
         config["bot"]["token"] = args.token
-    if args.channel is not None:
-        config["bot"]["channel"] = args.channel
-    if args.guild is not None:
-        config['bot']['guild'] = [args.guild]
+    if args.channels is not None:
+        config["bot"]["channels"] = args.channels
+    if args.guilds is not None:
+        config['bot']['guilds'] = args.guilds
+    if args.proxy is not None:
+        # Same situation with the token applies to the proxy as well
+        if type(args.proxy) == list and len(args.proxy) == 1:
+            args.proxy = args.proxy[0]
+        else:
+            print("Argparse behaviour broken again, debug variable values to find the issue")
+        config['bot']['connector'] = ProxyConnector.from_url(args.proxy, rdns=args.rdns)
 
     global_variables = GlobalVariables()
     global_variables.set_config(config)
@@ -62,7 +96,7 @@ if __name__ == "__main__":
             print(f'{client.user} has connected to Discord!')
 
 
-        guild_ids = global_variables.config['bot']['guild']
+        guild_ids = global_variables.config['bot']['guilds']
         ########################################################
         options = [
             {
@@ -77,7 +111,7 @@ if __name__ == "__main__":
     @slash.slash(name='Stats', description='Displays player stats on team games', guild_ids=guild_ids,
                  options=options)
     async def stats(ctx: SlashContext, requested_user: str, name=' '):
-        if ctx.channel.id == global_variables.config['bot']['channel']:
+        if ctx.channel.id == global_variables.config['bot']['channels']:
             flags = ""
             requested_user_string_length = len(requested_user)
             # If requested_user is in the form of a Cylone playerID
@@ -94,7 +128,7 @@ if __name__ == "__main__":
             # If requested_user is in the form of a Minecraft UUID with dashes
             elif (requested_user_string_length == 36):
                 flags += "?byUUID=true"
-            async with aiohttp.ClientSession() as cs:
+            async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                 async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + requested_user + flags, ) as r:
                     res = await r.json()
                     # If the specified user, whether by username, UUID, or playerID does not exist
@@ -145,7 +179,7 @@ if __name__ == "__main__":
                                               "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                     page1.set_image(url='https://crafatar.com/renders/head/' + skin)
                 ################################################################
-                async with aiohttp.ClientSession() as cs:
+                async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/match/latest/' + mc_name, ) as r:
                         res = await r.json()
                         ms3 = res[0]['match']['startedDate']
@@ -210,7 +244,7 @@ if __name__ == "__main__":
     ##############################################
     @slash.slash(name='Help', description='Displays the help menu and credits', guild_ids=guild_ids)
     async def help(ctx: SlashContext):
-        if ctx.channel.id == global_variables.config['bot']['channel']:
+        if ctx.channel.id == global_variables.config['bot']['channels']:
             page1 = discord.Embed(title="", color=0xbc2a82)
             page1.set_author(name="Cylone Stats Bot Help Menu 1/2")
             page1.add_field(name="Stats", value="Displays latest game and player stats on team games", 
@@ -268,8 +302,8 @@ if __name__ == "__main__":
     ##############################################
     @slash.slash(name='Leaderboard', description='Displays team games leaderboards', guild_ids=guild_ids)
     async def help(ctx: SlashContext):
-        if ctx.channel.id == global_variables.config['bot']['channel']:
-                async with aiohttp.ClientSession() as cs:
+        if ctx.channel.id == global_variables.config['bot']['channels']:
+                async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/kills') as r:
                         res = await r.json()
                         #######
@@ -299,7 +333,7 @@ if __name__ == "__main__":
                         page1.timestamp = datetime.datetime.utcnow()
                         page1.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                     ################################################################
-                        async with aiohttp.ClientSession() as cs:
+                        async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                             async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/wins') as r:
                                 res = await r.json()
                         page2 = discord.Embed(title="", color=0xbc2a82)
@@ -327,7 +361,7 @@ if __name__ == "__main__":
                         page2.timestamp = datetime.datetime.utcnow()
                         page2.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                     ###############################################################
-                        async with aiohttp.ClientSession() as cs:
+                        async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                             async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/xp') as r:
                                 res = await r.json()
                         page3 = discord.Embed(title="", color=0xbc2a82)
@@ -355,7 +389,7 @@ if __name__ == "__main__":
                         page3.timestamp = datetime.datetime.utcnow()
                         page3.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                     ################################################################
-                        async with aiohttp.ClientSession() as cs:
+                        async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                             async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/losses') as r:
                                 res = await r.json()
                         page4 = discord.Embed(title="", color=0xbc2a82)

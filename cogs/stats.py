@@ -4,6 +4,7 @@ import aiohttp
 from ago import human
 from datetime import datetime
 import datetime
+
 from discord.ext import commands
 
 from customobjects import EmbedField
@@ -19,7 +20,7 @@ class Stats(commands.Cog):
     @commands.command(aliases=['stat'])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def stats(self, ctx: commands.context, requested_user: str):
-        if ctx.channel.id == self.global_variables.config['bot']['channel']:
+        if ctx.channel.id == self.global_variables.config['bot']['channels']:
             async with ctx.typing():
                 flags = ""
                 requested_user_string_length = len(requested_user)
@@ -37,7 +38,7 @@ class Stats(commands.Cog):
                 # If requested_user is in the form of a Minecraft UUID with dashes
                 elif (requested_user_string_length == 36):
                     flags += "?byUUID=true"
-                async with aiohttp.ClientSession() as cs:
+                async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + requested_user + flags, ) as r:
                         res = await r.json()
                         # If the specified user, whether by username, UUID, or playerID does not exist

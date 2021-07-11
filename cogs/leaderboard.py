@@ -36,24 +36,24 @@ class Leaderboard(commands.Cog):
     @commands.command(aliases=["lb", "leaderboards"])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def leaderboard(self, ctx: commands.context):
-        if ctx.channel.id == self.global_variables.config['bot']['channel']:
+        if ctx.channel.id == self.global_variables.config['bot']['channels']:
             async with ctx.typing():
-                async with aiohttp.ClientSession() as cs:
+                async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/kills') as r:
                         res = await r.json()
                         page1 = self.create_embed(res, 1, 'kills')
 
-                        async with aiohttp.ClientSession() as cs:
+                        async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                             async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/wins') as r:
                                 res = await r.json()
                         page2 = self.create_embed(res, 2, 'wins')
 
-                        async with aiohttp.ClientSession() as cs:
+                        async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                             async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/xp') as r:
                                 res = await r.json()
                         page3 = self.create_embed(res, 3, 'level')
 
-                        async with aiohttp.ClientSession() as cs:
+                        async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
                             async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/losses') as r:
                                 res = await r.json()
                         page4 = self.create_embed(res, 4, 'losses')

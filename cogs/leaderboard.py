@@ -5,6 +5,8 @@ from aiohttp_socks import ProxyConnector
 from datetime import datetime
 import datetime
 from discord.ext import commands
+
+from customobjects import ProxyConnectorWrapper
 from globalvariables import GlobalVariables
 
 
@@ -42,8 +44,7 @@ class Leaderboard(commands.Cog):
     async def leaderboard(self, ctx: commands.context):
         if ctx.channel.id in self.global_variables.config['bot']['channels']:
             async with ctx.typing():
-                connector = ProxyConnector.from_url(self.global_variables.config['connection']['proxy'],
-                                                    rdns=self.global_variables.config['connection']['rdns'])
+                connector = ProxyConnectorWrapper().connector
                 async with aiohttp.ClientSession(connector=connector) as cs:
                     stat_types = ['kills', 'wins', 'xp', 'losses']
                     pages = []

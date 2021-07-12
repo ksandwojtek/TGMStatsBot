@@ -8,7 +8,7 @@ import datetime
 from aiohttp_socks import ProxyConnector
 from discord.ext import commands
 
-from customobjects import EmbedField
+from customobjects import EmbedField, ProxyConnectorWrapper
 from globalvariables import GlobalVariables
 
 
@@ -39,8 +39,7 @@ class Stats(commands.Cog):
                 # If requested_user is in the form of a Minecraft UUID with dashes
                 elif (requested_user_string_length == 36):
                     flags += "?byUUID=true"
-                connector = ProxyConnector.from_url(self.global_variables.config['connection']['proxy'],
-                                                    rdns=self.global_variables.config['connection']['rdns'])
+                connector = ProxyConnectorWrapper().connector
                 async with aiohttp.ClientSession(connector=connector) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + requested_user + flags, ) as r:
                         res = await r.json()

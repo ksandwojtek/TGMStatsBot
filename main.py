@@ -2,7 +2,7 @@
 import discord
 import os
 import aiohttp
-from aiohttp_socks import ProxyConnector
+from customobjects import ProxyConnectorWrapper
 import json
 import argparse
 from ago import human
@@ -19,8 +19,7 @@ if __name__ == "__main__":
     parseArguments()
 
     intents = discord.Intents.all()
-    connector = ProxyConnector.from_url(global_variables.config['connection']['proxy'],
-                                    rdns=global_variables.config['connection']['rdns'])
+    connector = ProxyConnectorWrapper().connector
     client = commands.Bot(command_prefix=global_variables.config["bot"]["prefix"], intents=intents, connector=connector)
     global_variables.set_client(client)
 
@@ -77,8 +76,7 @@ if __name__ == "__main__":
             # If requested_user is in the form of a Minecraft UUID with dashes
             elif (requested_user_string_length == 36):
                 flags += "?byUUID=true"
-            connector = ProxyConnector.from_url(global_variables.config['connection']['proxy'],
-                                                rdns=global_variables.config['connection']['rdns'])
+            connector = ProxyConnectorWrapper().connector
             async with aiohttp.ClientSession(connector=connector) as cs:
                 async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + requested_user + flags, ) as r:
                     res = await r.json()
@@ -130,8 +128,7 @@ if __name__ == "__main__":
                                               "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                     page1.set_image(url='https://crafatar.com/renders/head/' + skin)
                 ################################################################
-                connector = ProxyConnector.from_url(global_variables.config['connection']['proxy'],
-                                                    rdns=global_variables.config['connection']['rdns'])
+                connector = ProxyConnectorWrapper().connector
                 async with aiohttp.ClientSession(connector=connector) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/match/latest/' + mc_name, ) as r:
                         res = await r.json()
@@ -256,127 +253,123 @@ if __name__ == "__main__":
     @slash.slash(name='Leaderboard', description='Displays team games leaderboards', guild_ids=guild_ids)
     async def help(ctx: SlashContext):
         if ctx.channel.id in global_variables.config['bot']['channels']:
-            connector = ProxyConnector.from_url(global_variables.config['connection']['proxy'],
-                                                rdns=global_variables.config['connection']['rdns'])
-            async with aiohttp.ClientSession(connector=connector) as cs:
-                async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/kills') as r:
-                    res = await r.json()
-                    #######
-                    #######
-                    page1 = discord.Embed(title="", color=0xbc2a82)
-                    page1.set_author(name="Cylone Network Kills Leaderboard 1/4")
-                    page1.add_field(name=":first_place: 1. " + res[0]['name'],
-                                    value=res[0]['kills'], inline=False)
-                    page1.add_field(name=":second_place: 2. "+ res[1]['name'],
-                                    value=res[1]['kills'], inline=False)
-                    page1.add_field(name=":third_place: 3. "+ res[2]['name'],
-                                    value=res[2]['kills'], inline=False)
-                    page1.add_field(name="4. "+ res[3]['name'],
-                                    value=res[3]['kills'], inline=False)
-                    page1.add_field(name="5. "+ res[4]['name'],
-                                    value=res[4]['kills'], inline=False)
-                    page1.add_field(name="6. "+ res[5]['name'],
-                                    value=res[5]['kills'], inline=False)
-                    page1.add_field(name="7. "+ res[6]['name'],
-                                    value=res[6]['kills'], inline=False)
-                    page1.add_field(name="8. "+ res[7]['name'],
-                                    value=res[7]['kills'], inline=False)
-                    page1.add_field(name="9. "+ res[8]['name'],
-                                    value=res[8]['kills'], inline=False)
-                    page1.add_field(name="10. "+ res[9]['name'],
-                                    value=res[9]['kills'], inline=False)
-                    page1.timestamp = datetime.datetime.utcnow()
-                    page1.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
-                ################################################################
-                    connector = ProxyConnector.from_url(global_variables.config['connection']['proxy'],
-                                                        rdns=global_variables.config['connection']['rdns'])
-                    async with aiohttp.ClientSession(connector=connector) as cs:
-                        async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/wins') as r:
-                            res = await r.json()
-                    page2 = discord.Embed(title="", color=0xbc2a82)
-                    page2.set_author(name="Cylone Network Wins Leaderboard 2/4")
-                    page2.add_field(name=":first_place: 1. " + res[0]['name'],
-                                    value=res[0]['wins'], inline=False)
-                    page2.add_field(name=":second_place: 2. "+ res[1]['name'],
-                                    value=res[1]['wins'], inline=False)
-                    page2.add_field(name=":third_place: 3. "+ res[2]['name'],
-                                    value=res[2]['wins'], inline=False)
-                    page2.add_field(name="4. "+ res[3]['name'],
-                                    value=res[3]['wins'], inline=False)
-                    page2.add_field(name="5. "+ res[4]['name'],
-                                    value=res[4]['wins'], inline=False)
-                    page2.add_field(name="6. "+ res[5]['name'],
-                                    value=res[5]['wins'], inline=False)
-                    page2.add_field(name="7. "+ res[6]['name'],
-                                    value=res[6]['wins'], inline=False)
-                    page2.add_field(name="8. "+ res[7]['name'],
-                                    value=res[7]['wins'], inline=False)
-                    page2.add_field(name="9. "+ res[8]['name'],
-                                    value=res[8]['wins'], inline=False)
-                    page2.add_field(name="10. "+ res[9]['name'],
-                                    value=res[9]['wins'], inline=False)
-                    page2.timestamp = datetime.datetime.utcnow()
-                    page2.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
-                ###############################################################
-                    connector = ProxyConnector.from_url(global_variables.config['connection']['proxy'],
-                                                        rdns=global_variables.config['connection']['rdns'])
-                    async with aiohttp.ClientSession(connector=connector) as cs:
-                        async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/xp') as r:
-                            res = await r.json()
-                    page3 = discord.Embed(title="", color=0xbc2a82)
-                    page3.set_author(name="Cylone Network Level Leaderboard 3/4")
-                    page3.add_field(name=":first_place: 1. " + res[0]['name'],
-                                    value=res[0]['level'], inline=False)
-                    page3.add_field(name=":second_place: 2. "+ res[1]['name'],
-                                    value=res[1]['level'], inline=False)
-                    page3.add_field(name=":third_place: 3. "+ res[2]['name'],
-                                    value=res[2]['level'], inline=False)
-                    page3.add_field(name="4. "+ res[3]['name'],
-                                    value=res[3]['level'], inline=False)
-                    page3.add_field(name="5. "+ res[4]['name'],
-                                    value=res[4]['level'], inline=False)
-                    page3.add_field(name="6. "+ res[5]['name'],
-                                    value=res[5]['level'], inline=False)
-                    page3.add_field(name="7. "+ res[6]['name'],
-                                    value=res[6]['level'], inline=False)
-                    page3.add_field(name="8. "+ res[7]['name'],
-                                    value=res[7]['level'], inline=False)
-                    page3.add_field(name="9. "+ res[8]['name'],
-                                    value=res[8]['level'], inline=False)
-                    page3.add_field(name="10. "+ res[9]['name'],
-                                    value=res[9]['level'], inline=False)
-                    page3.timestamp = datetime.datetime.utcnow()
-                    page3.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
-                ################################################################
-                    connector = ProxyConnector.from_url(global_variables.config['connection']['proxy'],
-                                                        rdns=global_variables.config['connection']['rdns'])
-                    async with aiohttp.ClientSession(connector=connector) as cs:
-                        async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/losses') as r:
-                            res = await r.json()
-                    page4 = discord.Embed(title="", color=0xbc2a82)
-                    page4.set_author(name="Cylone Network Losses Leaderboard 4/4")
-                    page4.add_field(name=":first_place: 1. " + res[0]['name'],
-                                    value=res[0]['losses'], inline=False)
-                    page4.add_field(name=":second_place: 2. "+ res[1]['name'],
-                                    value=res[1]['losses'], inline=False)
-                    page4.add_field(name=":third_place: 3. "+ res[2]['name'],
-                                    value=res[2]['losses'], inline=False)
-                    page4.add_field(name="4. "+ res[3]['name'],
-                                    value=res[3]['losses'], inline=False)
-                    page4.add_field(name="5. "+ res[4]['name'],
-                                    value=res[4]['losses'], inline=False)
-                    page4.add_field(name="6. "+ res[5]['name'],
-                                    value=res[5]['losses'], inline=False)
-                    page4.add_field(name="7. "+ res[6]['name'],
-                                    value=res[6]['losses'], inline=False)
-                    page4.add_field(name="8. "+ res[7]['name'],
-                                    value=res[7]['losses'], inline=False)
-                    page4.add_field(name="9. "+ res[8]['name'],
-                                    value=res[8]['losses'], inline=False)
-                    page4.add_field(name="10. "+ res[9]['name'],
-                                    value=res[9]['losses'], inline=False)
-                    page4.timestamp = datetime.datetime.utcnow()
-                    page4.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+                connector = ProxyConnectorWrapper().connector
+                async with aiohttp.ClientSession(connector=connector) as cs:
+                    async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/kills') as r:
+                        res = await r.json()
+                        #######
+                        #######
+                        page1 = discord.Embed(title="", color=0xbc2a82)
+                        page1.set_author(name="Cylone Network Kills Leaderboard 1/4")
+                        page1.add_field(name=":first_place: 1. " + res[0]['name'],
+                                        value=res[0]['kills'], inline=False)
+                        page1.add_field(name=":second_place: 2. "+ res[1]['name'],
+                                        value=res[1]['kills'], inline=False)
+                        page1.add_field(name=":third_place: 3. "+ res[2]['name'],
+                                        value=res[2]['kills'], inline=False)
+                        page1.add_field(name="4. "+ res[3]['name'],
+                                        value=res[3]['kills'], inline=False)
+                        page1.add_field(name="5. "+ res[4]['name'],
+                                        value=res[4]['kills'], inline=False)
+                        page1.add_field(name="6. "+ res[5]['name'],
+                                        value=res[5]['kills'], inline=False)
+                        page1.add_field(name="7. "+ res[6]['name'],
+                                        value=res[6]['kills'], inline=False)
+                        page1.add_field(name="8. "+ res[7]['name'],
+                                        value=res[7]['kills'], inline=False)
+                        page1.add_field(name="9. "+ res[8]['name'],
+                                        value=res[8]['kills'], inline=False)
+                        page1.add_field(name="10. "+ res[9]['name'],
+                                        value=res[9]['kills'], inline=False)
+                        page1.timestamp = datetime.datetime.utcnow()
+                        page1.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+                    ################################################################
+                        connector = ProxyConnectorWrapper().connector
+                        async with aiohttp.ClientSession(connector=connector) as cs:
+                            async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/wins') as r:
+                                res = await r.json()
+                        page2 = discord.Embed(title="", color=0xbc2a82)
+                        page2.set_author(name="Cylone Network Wins Leaderboard 2/4")
+                        page2.add_field(name=":first_place: 1. " + res[0]['name'],
+                                        value=res[0]['wins'], inline=False)
+                        page2.add_field(name=":second_place: 2. "+ res[1]['name'],
+                                        value=res[1]['wins'], inline=False)
+                        page2.add_field(name=":third_place: 3. "+ res[2]['name'],
+                                        value=res[2]['wins'], inline=False)
+                        page2.add_field(name="4. "+ res[3]['name'],
+                                        value=res[3]['wins'], inline=False)
+                        page2.add_field(name="5. "+ res[4]['name'],
+                                        value=res[4]['wins'], inline=False)
+                        page2.add_field(name="6. "+ res[5]['name'],
+                                        value=res[5]['wins'], inline=False)
+                        page2.add_field(name="7. "+ res[6]['name'],
+                                        value=res[6]['wins'], inline=False)
+                        page2.add_field(name="8. "+ res[7]['name'],
+                                        value=res[7]['wins'], inline=False)
+                        page2.add_field(name="9. "+ res[8]['name'],
+                                        value=res[8]['wins'], inline=False)
+                        page2.add_field(name="10. "+ res[9]['name'],
+                                        value=res[9]['wins'], inline=False)
+                        page2.timestamp = datetime.datetime.utcnow()
+                        page2.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+                    ###############################################################
+                        connector = ProxyConnectorWrapper().connector
+                        async with aiohttp.ClientSession(connector=connector) as cs:
+                            async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/xp') as r:
+                                res = await r.json()
+                        page3 = discord.Embed(title="", color=0xbc2a82)
+                        page3.set_author(name="Cylone Network Level Leaderboard 3/4")
+                        page3.add_field(name=":first_place: 1. " + res[0]['name'],
+                                        value=res[0]['level'], inline=False)
+                        page3.add_field(name=":second_place: 2. "+ res[1]['name'],
+                                        value=res[1]['level'], inline=False)
+                        page3.add_field(name=":third_place: 3. "+ res[2]['name'],
+                                        value=res[2]['level'], inline=False)
+                        page3.add_field(name="4. "+ res[3]['name'],
+                                        value=res[3]['level'], inline=False)
+                        page3.add_field(name="5. "+ res[4]['name'],
+                                        value=res[4]['level'], inline=False)
+                        page3.add_field(name="6. "+ res[5]['name'],
+                                        value=res[5]['level'], inline=False)
+                        page3.add_field(name="7. "+ res[6]['name'],
+                                        value=res[6]['level'], inline=False)
+                        page3.add_field(name="8. "+ res[7]['name'],
+                                        value=res[7]['level'], inline=False)
+                        page3.add_field(name="9. "+ res[8]['name'],
+                                        value=res[8]['level'], inline=False)
+                        page3.add_field(name="10. "+ res[9]['name'],
+                                        value=res[9]['level'], inline=False)
+                        page3.timestamp = datetime.datetime.utcnow()
+                        page3.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+                    ################################################################
+                        connector = ProxyConnectorWrapper().connector
+                        async with aiohttp.ClientSession(connector=connector) as cs:
+                            async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/losses') as r:
+                                res = await r.json()
+                        page4 = discord.Embed(title="", color=0xbc2a82)
+                        page4.set_author(name="Cylone Network Losses Leaderboard 4/4")
+                        page4.add_field(name=":first_place: 1. " + res[0]['name'],
+                                        value=res[0]['losses'], inline=False)
+                        page4.add_field(name=":second_place: 2. "+ res[1]['name'],
+                                        value=res[1]['losses'], inline=False)
+                        page4.add_field(name=":third_place: 3. "+ res[2]['name'],
+                                        value=res[2]['losses'], inline=False)
+                        page4.add_field(name="4. "+ res[3]['name'],
+                                        value=res[3]['losses'], inline=False)
+                        page4.add_field(name="5. "+ res[4]['name'],
+                                        value=res[4]['losses'], inline=False)
+                        page4.add_field(name="6. "+ res[5]['name'],
+                                        value=res[5]['losses'], inline=False)
+                        page4.add_field(name="7. "+ res[6]['name'],
+                                        value=res[6]['losses'], inline=False)
+                        page4.add_field(name="8. "+ res[7]['name'],
+                                        value=res[7]['losses'], inline=False)
+                        page4.add_field(name="9. "+ res[8]['name'],
+                                        value=res[8]['losses'], inline=False)
+                        page4.add_field(name="10. "+ res[9]['name'],
+                                        value=res[9]['losses'], inline=False)
+                        page4.timestamp = datetime.datetime.utcnow()
+                        page4.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
         else:
             embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
             await ctx.send(embed=embed_var)

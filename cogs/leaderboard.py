@@ -1,6 +1,7 @@
 import discord
 import aiohttp
 
+from aiohttp_socks import ProxyConnector
 from datetime import datetime
 import datetime
 from discord.ext import commands
@@ -38,32 +39,22 @@ class Leaderboard(commands.Cog):
     async def leaderboard(self, ctx: commands.context):
         if ctx.channel.id in self.global_variables.config['bot']['channels']:
             async with ctx.typing():
-                async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
-                    async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/kills') as r:
-                        res = await r.json()
-                        page1 = self.create_embed(res, 1, 'kills')
+                connector = ProxyConnector.from_url(self.global_variables.config['connection']['proxy'],
+                                                    rdns=self.global_variables.config['connection']['rdns'])
+                async with aiohttp.ClientSession(connector=connector) as cs:
+                    stat_types = ['kills', 'wins', 'xp', 'losses']
+                    pages = []
+                    for i in range(0, len(stat_types)):
+                        async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/' + stat_types[i]) as r:
+                            res = await r.json()
+                            pages.append(self.create_embed(res, i + 1, stat_types[i]))
 
-                        async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
-                            async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/wins') as r:
-                                res = await r.json()
-                        page2 = self.create_embed(res, 2, 'wins')
-
-                        async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
-                            async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/xp') as r:
-                                res = await r.json()
-                        page3 = self.create_embed(res, 3, 'level')
-
-                        async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
-                            async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/losses') as r:
-                                res = await r.json()
-                        page4 = self.create_embed(res, 4, 'losses')
         else:
             embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
             await ctx.send(embed=embed_var)
             pass
 
-        pages = [page1, page2, page3, page4]
-        message = await ctx.send(embed=page1)
+        message = await ctx.send(embed=pages[0])
         await message.add_reaction('◀')
         await message.add_reaction('▶')
         self.global_variables.messages.append({"message": message, "author": ctx.author, "pages": pages, "page_number": 0})

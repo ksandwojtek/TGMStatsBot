@@ -5,6 +5,7 @@ from ago import human
 from datetime import datetime
 import datetime
 
+from aiohttp_socks import ProxyConnector
 from discord.ext import commands
 
 from customobjects import EmbedField
@@ -38,7 +39,9 @@ class Stats(commands.Cog):
                 # If requested_user is in the form of a Minecraft UUID with dashes
                 elif (requested_user_string_length == 36):
                     flags += "?byUUID=true"
-                async with aiohttp.ClientSession(connector=self.global_variables.config['bot']['connector']) as cs:
+                connector = ProxyConnector.from_url(self.global_variables.config['connection']['proxy'],
+                                                    rdns=self.global_variables.config['connection']['rdns'])
+                async with aiohttp.ClientSession(connector=connector) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + requested_user + flags, ) as r:
                         res = await r.json()
                         # If the specified user, whether by username, UUID, or playerID does not exist

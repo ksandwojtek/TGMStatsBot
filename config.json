@@ -3,8 +3,11 @@
     "token": "token",
     "prefix": "*",
     "channels": 765849289817456651,
-    "guilds": 754890606173487154,
-    "proxy": ""
- }
+    "guilds": 754890606173487154
+ },
+  "connection": {
+    "proxy": null,
+    "rdns" : null
+  }
 }
 

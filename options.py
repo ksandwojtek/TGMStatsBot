@@ -57,7 +57,8 @@ def parseArguments():
             args.proxy = args.proxy[0]
         else:
             print("Argparse behaviour broken again, debug variable values to find the issue")
-        config['bot']['connector'] = ProxyConnector.from_url(args.proxy, rdns=args.rdns)
+        config['connection']['proxy'] = args.proxy
+        config['connection']['rdns'] = args.rdns
 
     global_variables = GlobalVariables()
     global_variables.set_config(config)

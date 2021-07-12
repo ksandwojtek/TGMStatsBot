@@ -14,11 +14,14 @@ class Leaderboard(commands.Cog):
 
         self.client = client
         self.global_variables = GlobalVariables()
-        self.leaderboard_prefix = {1: ":first_place:", 2: ":second_place:", 3: ":third_place:"}
+        self.leaderboard_prefix = {0: ":first_place:", 1: ":second_place:", 2: ":third_place:"}
 
     def create_embed(self, res, page_number: int, leaderboard_type: str):
         #######
         #######
+        if leaderboard_type == "xp":
+            leaderboard_type = "level"
+
         page = discord.Embed(title="", color=0xbc2a82)
         page.set_author(name="Cylone Network " + leaderboard_type.title() + " Leaderboard " + str(page_number) + "/4")
 

@@ -13,6 +13,8 @@
 class GlobalVariables(object):
     _instance = None
     config = None
+    client = None
+    messages = []
 
     def __new__(cls):
         if cls._instance is None:
@@ -22,3 +24,6 @@ class GlobalVariables(object):
 
     def set_config(self, config):
         self.config = config
+
+    def set_client(self, client):
+        self.client = client

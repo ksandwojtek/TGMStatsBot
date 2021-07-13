@@ -2,8 +2,12 @@
   "bot": {
     "token": "token",
     "prefix": "*",
-    "channel": 765849289817456651,
-    "guild": [754890606173487154]
- }
+    "channels": 765849289817456651,
+    "guilds": 754890606173487154
+ },
+  "connection": {
+    "proxy": null,
+    "rdns" : null
+  }
 }
 

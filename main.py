@@ -2,6 +2,7 @@
 import discord
 import os
 import aiohttp
+from customobjects import ProxyConnectorWrapper
 import json
 import argparse
 from ago import human
@@ -9,34 +10,18 @@ from datetime import datetime
 import datetime
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext, context
-
+from options import parseArguments
 from customobjects import EmbedField
 from globalvariables import GlobalVariables
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Runs an instance of the Cylone Stat Bot")
-    parser.add_argument("-t", "--token", nargs="?", type=str, help="Discord bot token")
-    parser.add_argument("-c", "--channel", nargs="?", type=int, help="Channel ID where the Discord Bot will respond "
-                                                                     "to queries")
-    parser.add_argument("-g", "--guild", nargs="?", type=int, help="ID of the Guild/Server that the bot is in.")
-    args = parser.parse_args()
-
-    with open("./config.json", mode="r") as fl:
-
-        config = json.loads(fl.read())
-
-    if args.token is not None:
-        config["bot"]["token"] = args.token
-    if args.channel is not None:
-        config["bot"]["channel"] = args.channel
-    if args.guild is not None:
-        config['bot']['guild'] = [args.guild]
-
     global_variables = GlobalVariables()
-    global_variables.set_config(config)
+    parseArguments()
 
     intents = discord.Intents.all()
-    client = commands.Bot(command_prefix=config["bot"]["prefix"], intents=intents, case_insensitive=True)
+    connector = ProxyConnectorWrapper().connector
+    client = commands.Bot(command_prefix=global_variables.config["bot"]["prefix"], intents=intents, connector=connector)
+    global_variables.set_client(client)
 
     slash = SlashCommand(client, sync_commands=True)
 
@@ -44,10 +29,14 @@ if __name__ == "__main__":
 
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
-            client.load_extension(f'cogs.{filename[:-3]}')
-            print(f'Loaded {filename[:-3]}')
+            try:
+                client.load_extension(f'cogs.{filename[:-3]}')
+                print(f'Loaded command \"{filename[:-3]}\"')
+            except Exception as e:
+                print(e)
         else:
-            print(f'Unable to load {filename[:-3]}')
+            # print(f'Unable to load {filename[:-3]}')
+            pass
 
         @client.event
         async def on_ready():
@@ -55,7 +44,7 @@ if __name__ == "__main__":
             print(f'{client.user} has connected to Discord!')
 
 
-        guild_ids = global_variables.config['bot']['guild']
+        guild_ids = global_variables.config['bot']['guilds']
         ########################################################
         options = [
             {
@@ -70,7 +59,7 @@ if __name__ == "__main__":
     @slash.slash(name='Stats', description='Displays player stats on team games', guild_ids=guild_ids,
                  options=options)
     async def stats(ctx: SlashContext, requested_user: str, name=' '):
-        if ctx.channel.id == global_variables.config['bot']['channel']:
+        if ctx.channel.id in global_variables.config['bot']['channels']:
             flags = ""
             requested_user_string_length = len(requested_user)
             # If requested_user is in the form of a Cylone playerID
@@ -87,8 +76,15 @@ if __name__ == "__main__":
             # If requested_user is in the form of a Minecraft UUID with dashes
             elif (requested_user_string_length == 36):
                 flags += "?byUUID=true"
-            async with aiohttp.ClientSession() as cs:
+            connector = ProxyConnectorWrapper().connector
+            async with aiohttp.ClientSession(connector=connector) as cs:
                 async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + requested_user + flags, ) as r:
+                    if (r.status == 522 or r.status == 502):
+                        print("The Cylone API is currently down, please wait for it to by restored to get up to"
+                              "date statistics.")
+                        # Add a cache that returns cached values if the API is down with the date of when the data
+                        # Was last updated
+                        return
                     res = await r.json()
                     # If the specified user, whether by username, UUID, or playerID does not exist
                     # We inform the user
@@ -138,8 +134,15 @@ if __name__ == "__main__":
                                               "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                     page1.set_image(url='https://crafatar.com/renders/head/' + skin)
                 ################################################################
-                async with aiohttp.ClientSession() as cs:
+                connector = ProxyConnectorWrapper().connector
+                async with aiohttp.ClientSession(connector=connector) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/match/latest/' + mc_name, ) as r:
+                        if (r.status == 522 or r.status == 502):
+                            print("The Cylone API is currently down, please wait for it to by restored to get up to"
+                                  "date statistics.")
+                            # Add a cache that returns cached values if the API is down with the date of when the data
+                            # Was last updated
+                            return
                         res = await r.json()
                         ms3 = res[0]['match']['startedDate']
                         i = 0
@@ -183,26 +186,27 @@ if __name__ == "__main__":
         reaction = None
         while True:
             if str(reaction) == '◀':
-                if i > 0:
-                    i -= 1
-                    await message.edit(embed=pages[i])
+                if message.id == reaction.message.id:
+                    if i > 0:
+                        i -= 1
+                        await message.edit(embed=pages[i])
             elif str(reaction) == '▶':
-                if i < 1:
-                    i += 1
-                    await message.edit(embed=pages[i])
+                if message.id == reaction.message.id:
+                    if i < 1:
+                        i += 1
+                        await message.edit(embed=pages[i])
             try:
                 reaction, user = await client.wait_for('reaction_add', timeout=45.0, check=check)
                 await message.remove_reaction(reaction, user)
             except Exception as e:
                 print(e)
                 break
-        await message.clear_reactions()
 
 
     ##############################################
     @slash.slash(name='Help', description='Displays the help menu and credits', guild_ids=guild_ids)
     async def help(ctx: SlashContext):
-        if ctx.channel.id == global_variables.config['bot']['channel']:
+        if ctx.channel.id in global_variables.config['bot']['channels']:
             page1 = discord.Embed(title="", color=0xbc2a82)
             page1.set_author(name="Cylone Stats Bot Help Menu 1/2")
             page1.add_field(name="Stats", value="Displays latest game and player stats on team games", 
@@ -216,10 +220,8 @@ if __name__ == "__main__":
             ################################################################
             page2 = discord.Embed(title="", color=0xbc2a82)
             page2.set_author(name="Credit List 2/2")
-            page2.add_field(name="Main Developer", value="<@431703739913732097> <:ksndq:856587427283337236>",
-                            inline=False)
-            page2.add_field(name="Co-Developer",
-                            value="<@336363923542376449> <:LordofLightning:856587426985934910>",
+            page2.add_field(name="Developers", value="<@431703739913732097> <:ksndq:856587427283337236> and "
+                                                     "<@336363923542376449> <:LordofLightning:856587426985934910>",
                             inline=False)
             page2.add_field(name="Tester", value="<@491621008856449044> <:THAWERZ:856589646909669427>",
                             inline=False)
@@ -243,33 +245,41 @@ if __name__ == "__main__":
         reaction = None
         while True:
             if str(reaction) == '◀':
-                if i > 0:
-                    i -= 1
-                    await message.edit(embed=pages[i])
+                if message.id == reaction.message.id:
+                    if i > 0:
+                        i -= 1
+                        await message.edit(embed=pages[i])
             elif str(reaction) == '▶':
-                if i < 1:
-                    i += 1
-                    await message.edit(embed=pages[i])
+                if message.id == reaction.message.id:
+                    if i < 1:
+                        i += 1
+                        await message.edit(embed=pages[i])
             try:
                 reaction, user = await client.wait_for('reaction_add', timeout=45.0, check=check)
                 await message.remove_reaction(reaction, user)
             except Exception as e:
                 print(e)
                 break
-        await message.clear_reactions()                  
 
     ##############################################
     @slash.slash(name='Leaderboard', description='Displays team games leaderboards', guild_ids=guild_ids)
     async def help(ctx: SlashContext):
-        if ctx.channel.id == global_variables.config['bot']['channel']:
-                async with aiohttp.ClientSession() as cs:
+        if ctx.channel.id in global_variables.config['bot']['channels']:
+                connector = ProxyConnectorWrapper().connector
+                async with aiohttp.ClientSession(connector=connector) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/kills') as r:
+                        if (r.status == 522 or r.status == 502):
+                            print("The Cylone API is currently down, please wait for it to by restored to get up to"
+                                  "date statistics.")
+                            # Add a cache that returns cached values if the API is down with the date of when the data
+                            # Was last updated
+                            return
                         res = await r.json()
                         #######
                         #######
                         page1 = discord.Embed(title="", color=0xbc2a82)
                         page1.set_author(name="Cylone Network Kills Leaderboard 1/4")
-                        page1.add_field(name=":first_place: 1. " + res[0]['name'], 
+                        page1.add_field(name=":first_place: 1. " + res[0]['name'],
                                         value=res[0]['kills'], inline=False)
                         page1.add_field(name=":second_place: 2. "+ res[1]['name'],
                                         value=res[1]['kills'], inline=False)
@@ -292,12 +302,21 @@ if __name__ == "__main__":
                         page1.timestamp = datetime.datetime.utcnow()
                         page1.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                     ################################################################
-                        async with aiohttp.ClientSession() as cs:
+                        connector = ProxyConnectorWrapper().connector
+                        async with aiohttp.ClientSession(connector=connector) as cs:
                             async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/wins') as r:
+                                if (r.status == 522 or r.status == 502):
+                                    print(
+                                        "The Cylone API is currently down, please wait for it to by restored to get "
+                                        "up to "
+                                        "date statistics.")
+                                    # Add a cache that returns cached values if the API is down with the date of when
+                                    # the data Was last updated
+                                    return
                                 res = await r.json()
                         page2 = discord.Embed(title="", color=0xbc2a82)
                         page2.set_author(name="Cylone Network Wins Leaderboard 2/4")
-                        page2.add_field(name=":first_place: 1. " + res[0]['name'], 
+                        page2.add_field(name=":first_place: 1. " + res[0]['name'],
                                         value=res[0]['wins'], inline=False)
                         page2.add_field(name=":second_place: 2. "+ res[1]['name'],
                                         value=res[1]['wins'], inline=False)
@@ -320,12 +339,21 @@ if __name__ == "__main__":
                         page2.timestamp = datetime.datetime.utcnow()
                         page2.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                     ###############################################################
-                        async with aiohttp.ClientSession() as cs:
+                        connector = ProxyConnectorWrapper().connector
+                        async with aiohttp.ClientSession(connector=connector) as cs:
                             async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/xp') as r:
+                                if (r.status == 522 or r.status == 502):
+                                    print(
+                                        "The Cylone API is currently down, please wait for it to by restored to get "
+                                        "up to "
+                                        "date statistics.")
+                                    # Add a cache that returns cached values if the API is down with the date of when
+                                    # the data Was last updated
+                                    return
                                 res = await r.json()
                         page3 = discord.Embed(title="", color=0xbc2a82)
                         page3.set_author(name="Cylone Network Level Leaderboard 3/4")
-                        page3.add_field(name=":first_place: 1. " + res[0]['name'], 
+                        page3.add_field(name=":first_place: 1. " + res[0]['name'],
                                         value=res[0]['level'], inline=False)
                         page3.add_field(name=":second_place: 2. "+ res[1]['name'],
                                         value=res[1]['level'], inline=False)
@@ -348,12 +376,21 @@ if __name__ == "__main__":
                         page3.timestamp = datetime.datetime.utcnow()
                         page3.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                     ################################################################
-                        async with aiohttp.ClientSession() as cs:
+                        connector = ProxyConnectorWrapper().connector
+                        async with aiohttp.ClientSession(connector=connector) as cs:
                             async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/losses') as r:
+                                if (r.status == 522 or r.status == 502):
+                                    print(
+                                        "The Cylone API is currently down, please wait for it to by restored to get "
+                                        "up to "
+                                        "date statistics.")
+                                    # Add a cache that returns cached values if the API is down with the date of when
+                                    # the data Was last updated
+                                    return
                                 res = await r.json()
                         page4 = discord.Embed(title="", color=0xbc2a82)
                         page4.set_author(name="Cylone Network Losses Leaderboard 4/4")
-                        page4.add_field(name=":first_place: 1. " + res[0]['name'], 
+                        page4.add_field(name=":first_place: 1. " + res[0]['name'],
                                         value=res[0]['losses'], inline=False)
                         page4.add_field(name=":second_place: 2. "+ res[1]['name'],
                                         value=res[1]['losses'], inline=False)
@@ -390,22 +427,47 @@ if __name__ == "__main__":
 
         i = 0
         reaction = None
-
         while True:
             if str(reaction) == '◀':
-                if i > 0:
-                    i -= 1
-                    await message.edit(embed=pages[i])
+                if message.id == reaction.message.id:
+                    if i > 0:
+                        i -= 1
+                        await message.edit(embed=pages[i])
             elif str(reaction) == '▶':
-                if i < 3:
-                    i += 1
-                    await message.edit(embed=pages[i])
-            try:
-                reaction, user = await client.wait_for('reaction_add', timeout=45.0, check=check)
-                await message.remove_reaction(reaction, user)
-            except Exception as e:
-                print(e)
-                break
-        await message.clear_reactions()                                                                                   
+                if message.id == reaction.message.id:
+                    if i < 1:
+                        i += 1
+                        await message.edit(embed=pages[i])
 
-    client.run(config["bot"]["token"], reconnect=True)
+
+    @global_variables.client.event
+    async def on_reaction_add(reaction, user):
+
+        def correct_message_get_and_check(reaction_message_id, user):
+            if not global_variables.messages:
+                return None
+            for message in global_variables.messages:
+                if message['message'].id == reaction_message_id and user == message['author']:
+                    return message
+            return None
+
+        message_dict = correct_message_get_and_check(reaction.message.id, user)
+        if message_dict is None:
+            return
+
+        if str(reaction) == '◀':
+            if message_dict['page_number'] > 0:
+                message_dict['page_number'] -= 1
+                await message_dict['message'].edit(embed=message_dict['pages'][message_dict['page_number']])
+        elif str(reaction) == '▶':
+            if message_dict['page_number'] < len(message_dict['pages']) - 1:
+                message_dict['page_number'] += 1
+                await message_dict['message'].edit(embed=message_dict['pages'][message_dict['page_number']])
+        try:
+            # reaction, user = await global_variables.client.wait_for('reaction_add', timeout=45.0)
+            await message_dict['message'].remove_reaction(reaction, user)
+        except Exception as e:
+            print(e)
+
+
+    client.run(global_variables.config["bot"]["token"], reconnect=True)

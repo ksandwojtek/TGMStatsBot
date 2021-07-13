@@ -23,11 +23,11 @@ class Help(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print('test')
+        pass
 
     @commands.command(aliases=['halp'])
     async def help(self, ctx: commands.context):
-        if ctx.channel.id == self.global_variables.config['bot']['channel']:
+        if ctx.channel.id in self.global_variables.config['bot']['channels']:
             async with ctx.typing():
                 page1 = discord.Embed(title="", color=0xbc2a82)
                 page1.set_author(name="Cylone Stats Bot Help Menu 1/2")
@@ -62,28 +62,7 @@ class Help(commands.Cog):
         message = await ctx.send(embed=page1)
         await message.add_reaction('◀')
         await message.add_reaction('▶')
-
-        def check(reaction, user):
-            return user == ctx.author
-
-        i = 0
-        reaction = None
-        while True:
-            if str(reaction) == '◀':
-                if i > 0:
-                    i -= 1
-                    await message.edit(embed=pages[i])
-            elif str(reaction) == '▶':
-                if i < 1:
-                    i += 1
-                    await message.edit(embed=pages[i])
-            try:
-                reaction, user = await self.client.wait_for('reaction_add', timeout=45.0, check=check)
-                await message.remove_reaction(reaction, user)
-            except Exception as e:
-                print(e)
-                break
-        await message.clear_reactions()
+        self.global_variables.messages.append({"message": message, "author": ctx.author, "pages": pages, "page_number": 0})
 
 
 def setup(client):

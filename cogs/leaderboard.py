@@ -1,9 +1,12 @@
 import discord
 import aiohttp
 
+from aiohttp_socks import ProxyConnector
 from datetime import datetime
 import datetime
 from discord.ext import commands
+
+from customobjects import ProxyConnectorWrapper
 from globalvariables import GlobalVariables
 
 
@@ -13,11 +16,14 @@ class Leaderboard(commands.Cog):
 
         self.client = client
         self.global_variables = GlobalVariables()
-        self.leaderboard_prefix = {1: ":first_place:", 2: ":second_place:", 3: ":third_place:"}
+        self.leaderboard_prefix = {0: ":first_place:", 1: ":second_place:", 2: ":third_place:"}
 
     def create_embed(self, res, page_number: int, leaderboard_type: str):
         #######
         #######
+        if leaderboard_type == "xp":
+            leaderboard_type = "level"
+
         page = discord.Embed(title="", color=0xbc2a82)
         page.set_author(name="Cylone Network " + leaderboard_type.title() + " Leaderboard " + str(page_number) + "/4")
 
@@ -36,59 +42,35 @@ class Leaderboard(commands.Cog):
     @commands.command(aliases=["lb", "leaderboards"])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def leaderboard(self, ctx: commands.context):
-        if ctx.channel.id == self.global_variables.config['bot']['channel']:
+        if ctx.channel.id in self.global_variables.config['bot']['channels']:
             async with ctx.typing():
-                async with aiohttp.ClientSession() as cs:
-                    async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/kills') as r:
-                        res = await r.json()
-                        page1 = self.create_embed(res, 1, 'kills')
+                connector = ProxyConnectorWrapper().connector
+                async with aiohttp.ClientSession(connector=connector) as cs:
+                    stat_types = ['kills', 'wins', 'xp', 'losses']
+                    pages = []
+                    for i in range(0, len(stat_types)):
+                        async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/' + stat_types[i]) as r:
+                            # currently not very efficient since we check if the API is down however many stat types we
+                            # have, though it is possible for the API to go down as we request the second or 3rd stat
+                            # type it's incredibly unlikely, not sure if this repeated checking is worth it
+                            if (r.status == 522 or r.status == 502):
+                                print("The Cylone API is currently down, please wait for it to by restored to get up to"
+                                      "date statistics.")
+                                # Add a cache that returns cached values if the API is down with the date of when the data
+                                # Was last updated
+                                return
+                            res = await r.json()
+                            pages.append(self.create_embed(res, i + 1, stat_types[i]))
 
-                        async with aiohttp.ClientSession() as cs:
-                            async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/wins') as r:
-                                res = await r.json()
-                        page2 = self.create_embed(res, 2, 'wins')
-
-                        async with aiohttp.ClientSession() as cs:
-                            async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/xp') as r:
-                                res = await r.json()
-                        page3 = self.create_embed(res, 3, 'level')
-
-                        async with aiohttp.ClientSession() as cs:
-                            async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/losses') as r:
-                                res = await r.json()
-                        page4 = self.create_embed(res, 4, 'losses')
         else:
             embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
             await ctx.send(embed=embed_var)
             pass
 
-        pages = [page1, page2, page3, page4]
-        message = await ctx.send(embed=page1)
+        message = await ctx.send(embed=pages[0])
         await message.add_reaction('◀')
         await message.add_reaction('▶')
-
-        def check(reaction, user):
-            return user == ctx.author
-
-        i = 0
-        reaction = None
-
-        while True:
-            if str(reaction) == '◀':
-                if i > 0:
-                    i -= 1
-                    await message.edit(embed=pages[i])
-            elif str(reaction) == '▶':
-                if i < 3:
-                    i += 1
-                    await message.edit(embed=pages[i])
-            try:
-                reaction, user = await self.client.wait_for('reaction_add', timeout=45.0, check=check)
-                await message.remove_reaction(reaction, user)
-            except Exception as e:
-                print(e)
-                break
-        await message.clear_reactions()
+        self.global_variables.messages.append({"message": message, "author": ctx.author, "pages": pages, "page_number": 0})
 
 
 def setup(client):

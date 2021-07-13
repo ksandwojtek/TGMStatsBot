@@ -4,23 +4,24 @@ import aiohttp
 from ago import human
 from datetime import datetime
 import datetime
+
+from aiohttp_socks import ProxyConnector
 from discord.ext import commands
 
-from customobjects import EmbedField
+from customobjects import EmbedField, ProxyConnectorWrapper
 from globalvariables import GlobalVariables
 
 
 class Stats(commands.Cog):
+    global_variables = GlobalVariables()
 
     def __init__(self, client):
-
-        self.client = client
-        self.global_variables = GlobalVariables()
+        pass
 
     @commands.command(aliases=['stat'])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def stats(self, ctx: commands.context, requested_user: str):
-        if ctx.channel.id == self.global_variables.config['bot']['channel']:
+        if ctx.channel.id in self.global_variables.config['bot']['channels']:
             async with ctx.typing():
                 flags = ""
                 requested_user_string_length = len(requested_user)
@@ -38,8 +39,15 @@ class Stats(commands.Cog):
                 # If requested_user is in the form of a Minecraft UUID with dashes
                 elif (requested_user_string_length == 36):
                     flags += "?byUUID=true"
-                async with aiohttp.ClientSession() as cs:
+                connector = ProxyConnectorWrapper().connector
+                async with aiohttp.ClientSession(connector=connector) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + requested_user + flags, ) as r:
+                        if (r.status == 522 or r.status == 502):
+                            print("The Cylone API is currently down, please wait for it to by restored to get up to"
+                                  "date statistics.")
+                            # Add a cache that returns cached values if the API is down with the date of when the data
+                            # Was last updated
+                            return
                         res = await r.json()
                         # If the specified user, whether by username, UUID, or playerID does not exist
                         # We inform the user
@@ -127,29 +135,7 @@ class Stats(commands.Cog):
         message = await ctx.send(embed=page1)
         await message.add_reaction('◀')
         await message.add_reaction('▶')
-
-        def check(reaction, user):
-            return user == ctx.author
-
-        i = 0
-        reaction = None
-
-        while True:
-            if str(reaction) == '◀':
-                if i > 0:
-                    i -= 1
-                    await message.edit(embed=pages[i])
-            elif str(reaction) == '▶':
-                if i < 1:
-                    i += 1
-                    await message.edit(embed=pages[i])
-            try:
-                reaction, user = await self.client.wait_for('reaction_add', timeout=45.0, check=check)
-                await message.remove_reaction(reaction, user)
-            except Exception as e:
-                print(e)
-                break
-        await message.clear_reactions()
+        self.global_variables.messages.append({"message": message, "author": ctx.author, "pages": pages, "page_number": 0})
 
 
 def setup(client):

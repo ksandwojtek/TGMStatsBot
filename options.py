@@ -60,5 +60,10 @@ def parseArguments():
         config['connection']['proxy'] = args.proxy
         config['connection']['rdns'] = args.rdns
 
+    if isinstance(config['bot']['channels'], int):
+        config['bot']['channels'] = [config['bot']['channels']]
+    if isinstance(config['bot']['guilds'], int):
+        config['bot']['guilds'] = [config['bot']['guilds']]
+
     global_variables = GlobalVariables()
     global_variables.set_config(config)

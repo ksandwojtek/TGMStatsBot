@@ -42,6 +42,12 @@ class Stats(commands.Cog):
                 connector = ProxyConnectorWrapper().connector
                 async with aiohttp.ClientSession(connector=connector) as cs:
                     async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + requested_user + flags, ) as r:
+                        if (r.status == 522 or r.status == 502):
+                            print("The Cylone API is currently down, please wait for it to by restored to get up to"
+                                  "date statistics.")
+                            # Add a cache that returns cached values if the API is down with the date of when the data
+                            # Was last updated
+                            return
                         res = await r.json()
                         # If the specified user, whether by username, UUID, or playerID does not exist
                         # We inform the user

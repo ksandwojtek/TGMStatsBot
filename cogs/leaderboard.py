@@ -50,6 +50,15 @@ class Leaderboard(commands.Cog):
                     pages = []
                     for i in range(0, len(stat_types)):
                         async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/' + stat_types[i]) as r:
+                            # currently not very efficient since we check if the API is down however many stat types we
+                            # have, though it is possible for the API to go down as we request the second or 3rd stat
+                            # type it's incredibly unlikely, not sure if this repeated checking is worth it
+                            if (r.status == 522 or r.status == 502):
+                                print("The Cylone API is currently down, please wait for it to by restored to get up to"
+                                      "date statistics.")
+                                # Add a cache that returns cached values if the API is down with the date of when the data
+                                # Was last updated
+                                return
                             res = await r.json()
                             pages.append(self.create_embed(res, i + 1, stat_types[i]))
 

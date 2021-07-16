@@ -6,8 +6,9 @@ from aiohttp_socks import ProxyConnector
 
 from globalvariables import GlobalVariables
 
-def parseArguments():
-    parser = argparse.ArgumentParser(description="Runs an instance of the Cylone Stat Bot")
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Runs an instance of the PVP Arcade Stat Bot")
     parser.add_argument("-t", "--token", nargs=1, type=str, help="Discord bot token")
     parser.add_argument("-c", "--channels", nargs="+", type=int, help="Channel ID(s) where the Discord Bot will respond"
                                                                       " to queries")

@@ -8,6 +8,10 @@
   "connection": {
     "proxy": null,
     "rdns" : null
+  },
+  "strings": {
+    "server_name": "",
+    "server_network_name": ""
   }
 }
 

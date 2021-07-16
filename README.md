@@ -1,1 +1,1 @@
-Bot made for CyloneMc.net by ksndq and North Carolinaball aka LordofLightning.
+Discord Stats Bot made for Team Games/Warzone Servers

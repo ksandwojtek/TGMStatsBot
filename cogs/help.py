@@ -11,7 +11,7 @@ from globalvariables import GlobalVariables
 async def process_help_command(self, ctx):
     if ctx.channel.id in self.global_variables.config['bot']['channels']:
         page1 = discord.Embed(title="", color=0xbc2a82)
-        page1.set_author(name="Cylone Stats Bot Help Menu 1/2")
+        page1.set_author(name="Bot Help Menu 1/2")
         page1.add_field(name="Stats", value="Displays latest game and player stats on team games.",
                         inline=False)
         page1.add_field(name="Lb/Leaderboard", value="Displays various team games leaderboards.", inline=False)

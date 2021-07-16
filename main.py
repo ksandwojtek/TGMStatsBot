@@ -10,13 +10,13 @@ from datetime import datetime
 import datetime
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext, context
-from options import parseArguments
+from options import parse_arguments
 from customobjects import EmbedField
 from globalvariables import GlobalVariables
 
 if __name__ == "__main__":
     global_variables = GlobalVariables()
-    parseArguments()
+    parse_arguments()
 
     intents = discord.Intents.all()
     connector = ProxyConnectorWrapper().connector
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     #     if ctx.channel.id in global_variables.config['bot']['channels']:
     #         flags = ""
     #         requested_user_string_length = len(requested_user)
-    #         # If requested_user is in the form of a Cylone playerID
+    #         # If requested_user is in the form of a Warzone/TGM playerID
     #         if (requested_user_string_length == 24):
     #             flags += "?byID=true"
     #         # If requested_user is in the form of a Minecraft UUID without dashes

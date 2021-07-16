@@ -52,7 +52,7 @@ class Leaderboard(commands.Cog):
                     stat_types = ['kills', 'wins', 'xp', 'losses']
                     pages = []
                     for i in range(0, len(stat_types)):
-                        async with cs.get('https://api.pvparca.de//mc/leaderboard/' + stat_types[i]) as r:
+                        async with cs.get('https://api.pvparca.de/mc/leaderboard/' + stat_types[i]) as r:
                             # currently not very efficient since we check if the API is down however many stat types we
                             # have, though it is possible for the API to go down as we request the second or 3rd stat
                             # type it's incredibly unlikely, not sure if this repeated checking is worth it

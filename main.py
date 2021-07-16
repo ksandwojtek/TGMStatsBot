@@ -78,7 +78,7 @@ if __name__ == "__main__":
                 flags += "?byUUID=true"
             connector = ProxyConnectorWrapper().connector
             async with aiohttp.ClientSession(connector=connector) as cs:
-                async with cs.get('https://api.pvparca.de//mc/player/' + requested_user + flags, ) as r:
+                async with cs.get('https://api.pvparca.de/mc/player/' + requested_user + flags, ) as r:
                     if (r.status == 522 or r.status == 502):
                         print("The Cylone API is currently down, please wait for it to by restored to get up to"
                               "date statistics.")
@@ -136,7 +136,7 @@ if __name__ == "__main__":
                 ################################################################
                 connector = ProxyConnectorWrapper().connector
                 async with aiohttp.ClientSession(connector=connector) as cs:
-                    async with cs.get('https://api.pvparca.de//mc/match/latest/' + mc_name, ) as r:
+                    async with cs.get('https://api.pvparca.de/mc/match/latest/' + mc_name, ) as r:
                         if (r.status == 522 or r.status == 502):
                             print("The Cylone API is currently down, please wait for it to by restored to get up to"
                                   "date statistics.")
@@ -267,7 +267,7 @@ if __name__ == "__main__":
     #     if ctx.channel.id in global_variables.config['bot']['channels']:
     #             connector = ProxyConnectorWrapper().connector
     #             async with aiohttp.ClientSession(connector=connector) as cs:
-    #                 async with cs.get('https://api.pvparca.de//mc/leaderboard/kills') as r:
+    #                 async with cs.get('https://api.pvparca.de/mc/leaderboard/kills') as r:
     #                     if (r.status == 522 or r.status == 502):
     #                         error_message = "The Cylone API is currently down, please wait for it to by " \
     #                                         "restored to get up-to-date statistics."
@@ -307,7 +307,7 @@ if __name__ == "__main__":
     #                 ################################################################
     #                     connector = ProxyConnectorWrapper().connector
     #                     async with aiohttp.ClientSession(connector=connector) as cs:
-    #                         async with cs.get('https://api.pvparca.de//mc/leaderboard/wins') as r:
+    #                         async with cs.get('https://api.pvparca.de/mc/leaderboard/wins') as r:
     #                             if (r.status == 522 or r.status == 502):
     #                                 error_message = "The Cylone API is currently down, please wait for it to by " \
     #                                                 "restored to get up-to-date statistics."
@@ -345,7 +345,7 @@ if __name__ == "__main__":
     #                 ###############################################################
     #                     connector = ProxyConnectorWrapper().connector
     #                     async with aiohttp.ClientSession(connector=connector) as cs:
-    #                         async with cs.get('https://api.pvparca.de//mc/leaderboard/xp') as r:
+    #                         async with cs.get('https://api.pvparca.de/mc/leaderboard/xp') as r:
     #                             if (r.status == 522 or r.status == 502):
     #                                 error_message = "The Cylone API is currently down, please wait for it to by " \
     #                                                 "restored to get up-to-date statistics."
@@ -383,7 +383,7 @@ if __name__ == "__main__":
     #                 ################################################################
     #                     connector = ProxyConnectorWrapper().connector
     #                     async with aiohttp.ClientSession(connector=connector) as cs:
-    #                         async with cs.get('https://api.pvparca.de//mc/leaderboard/losses') as r:
+    #                         async with cs.get('https://api.pvparca.de/mc/leaderboard/losses') as r:
     #                             if (r.status == 522 or r.status == 502):
     #                                 error_message = "The Cylone API is currently down, please wait for it to by " \
     #                                                 "restored to get up-to-date statistics."

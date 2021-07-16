@@ -44,7 +44,7 @@ if __name__ == "__main__":
         await client.change_presence(activity=discord.Game(name="PvPArca.de"))
         print(f'{client.user} has connected to Discord!')
 
-    guild_ids = global_variables.config['bot']['guilds']
+    # guild_ids = global_variables.config['bot']['guilds']
     # ########################################################
     # options = [
     #     {

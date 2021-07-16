@@ -23,7 +23,7 @@ async def process_leaderboard_command(self, ctx):
                     # have, though it is possible for the API to go down as we request the second or 3rd stat
                     # type it's incredibly unlikely, not sure if this repeated checking is worth it
                     if r.status == 522 or r.status == 502:
-                        error_message = "The Cylone API is currently down, please wait for it to by " \
+                        error_message = "The PVP Arcade Team Games API is currently down, please wait for it to by " \
                                         "restored to get up-to-date statistics."
                         print(error_message)
                         embed_var = discord.Embed(title=error_message, color=0xFF0000)
@@ -61,7 +61,8 @@ class Leaderboard(commands.Cog):
             leaderboard_type = "level"
 
         page = discord.Embed(title="", color=0xbc2a82)
-        page.set_author(name="Cylone Network " + leaderboard_type.title() + " Leaderboard " + str(page_number) + "/4")
+        page.set_author(name="PVP Arcade Team Games " + leaderboard_type.title() + " Leaderboard " +
+                             str(page_number) + "/4")
 
         for i in range(0, 10):
             leaderboard_prefix = self.leaderboard_prefix.get(i, "")

@@ -16,7 +16,7 @@ async def process_stats_command(self, ctx, requested_user):
     if ctx.channel.id in self.global_variables.config['bot']['channels']:
         flags = ""
         requested_user_string_length = len(requested_user)
-        # If requested_user is in the form of a Cylone playerID
+        # If requested_user is in the form of a Warzone/TGM playerID
         if (requested_user_string_length == 24):
             flags += "?byID=true"
         # If requested_user is in the form of a Minecraft UUID without dashes
@@ -34,7 +34,7 @@ async def process_stats_command(self, ctx, requested_user):
         async with aiohttp.ClientSession(connector=connector) as cs:
             async with cs.get('https://api.pvparca.de/mc/player/' + requested_user + flags, ) as r:
                 if (r.status == 522 or r.status == 502):
-                    error_message = "The Cylone API is currently down, please wait for it to by " \
+                    error_message = "The PVP Arcade Team Games API is currently down, please wait for it to by " \
                                     "restored to get up-to-date statistics."
                     print(error_message)
                     embed_var = discord.Embed(title=error_message, color=0xFF0000)
@@ -50,7 +50,8 @@ async def process_stats_command(self, ctx, requested_user):
                     # Or on NameMC to check if a username has been changed, if so tell the user that the player
                     # Who's stats they're looking up may have changed their name and deal with it appropiately
                     embed_var = discord.Embed(
-                        title="The user you specified is not in Cylone's database, please check your spelling.",
+                        title="The user you specified is not in PVP Arcade's Team Games database, "
+                              "please check your spelling.",
                         color=0xFF0000)
                     await ctx.send(embed=embed_var)
                     return
@@ -65,7 +66,7 @@ async def process_stats_command(self, ctx, requested_user):
                 d = res['user']['deaths']
                 #######
                 page1 = discord.Embed(title="", color=0xbc2a82)
-                page1.set_author(name=mc_name + " Stats on The Cylone Network 1/2")
+                page1.set_author(name=mc_name + " Stats on the Team Games Mode of The PVP Arcade Network 1/2")
                 page1_embed_fields = [
                     EmbedField(name="<a:played:853633469014605824> Matches played",
                                value=res['user']['matches']),

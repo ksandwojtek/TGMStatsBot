@@ -41,10 +41,13 @@ class Stats(commands.Cog):
                     flags += "?byUUID=true"
                 connector = ProxyConnectorWrapper().connector
                 async with aiohttp.ClientSession(connector=connector) as cs:
-                    async with cs.get('https://tgmapi.cylonemc.net/mc/player/' + requested_user + flags, ) as r:
+                    async with cs.get('https://api.pvparca.de//mc/player/' + requested_user + flags, ) as r:
                         if (r.status == 522 or r.status == 502):
-                            print("The Cylone API is currently down, please wait for it to by restored to get up to"
-                                  "date statistics.")
+                            error_message = "The Cylone API is currently down, please wait for it to by " \
+                                            "restored to get up-to-date statistics."
+                            print(error_message)
+                            embed_var = discord.Embed(title=error_message, color=0xFF0000)
+                            await ctx.send(embed=embed_var)
                             # Add a cache that returns cached values if the API is down with the date of when the data
                             # Was last updated
                             return
@@ -99,7 +102,7 @@ class Stats(commands.Cog):
                                                   "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
                         page1.set_image(url='https://crafatar.com/renders/head/' + skin)
                     ################################################################
-                    async with cs.get('https://tgmapi.cylonemc.net/mc/match/latest/' + mc_name, ) as r:
+                    async with cs.get('https://api.pvparca.de//mc/match/latest/' + mc_name, ) as r:
                         res = await r.json()
                         ms3 = res[0]['match']['startedDate']
                         i = 0

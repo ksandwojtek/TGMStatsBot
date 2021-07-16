@@ -4,7 +4,10 @@ import aiohttp
 from aiohttp_socks import ProxyConnector
 from datetime import datetime
 import datetime
+
+from discord import Embed
 from discord.ext import commands
+from discord_slash import cog_ext, SlashContext
 
 from customobjects import ProxyConnectorWrapper
 from globalvariables import GlobalVariables
@@ -49,13 +52,16 @@ class Leaderboard(commands.Cog):
                     stat_types = ['kills', 'wins', 'xp', 'losses']
                     pages = []
                     for i in range(0, len(stat_types)):
-                        async with cs.get('https://tgmapi.cylonemc.net/mc/leaderboard/' + stat_types[i]) as r:
+                        async with cs.get('https://api.pvparca.de//mc/leaderboard/' + stat_types[i]) as r:
                             # currently not very efficient since we check if the API is down however many stat types we
                             # have, though it is possible for the API to go down as we request the second or 3rd stat
                             # type it's incredibly unlikely, not sure if this repeated checking is worth it
                             if (r.status == 522 or r.status == 502):
-                                print("The Cylone API is currently down, please wait for it to by restored to get up to"
-                                      "date statistics.")
+                                error_message = "The Cylone API is currently down, please wait for it to by " \
+                                                "restored to get up-to-date statistics."
+                                print(error_message)
+                                embed_var = discord.Embed(title=error_message, color=0xFF0000)
+                                await ctx.send(embed=embed_var)
                                 # Add a cache that returns cached values if the API is down with the date of when the data
                                 # Was last updated
                                 return
@@ -72,6 +78,10 @@ class Leaderboard(commands.Cog):
         await message.add_reaction('▶')
         self.global_variables.messages.append({"message": message, "author": ctx.author, "pages": pages, "page_number": 0})
 
+    @cog_ext.cog_slash(name='Leaderboard', description='Displays team games leaderboards', guild_ids=guild_ids)
+    async def _leaderboard(self, ctx: SlashContext):
+        embed = Embed(title="Embed Test")
+        await ctx.send(embed=embed)
 
 def setup(client):
     client.add_cog(Leaderboard(client))

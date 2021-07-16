@@ -5,12 +5,14 @@ import random
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 
+from customobjects import ProxyConnectorWrapper
 from globalvariables import GlobalVariables
 
 
 async def process_cat_command(self, ctx):
     if ctx.channel.id in self.global_variables.config['bot']['channels']:
-        async with aiohttp.ClientSession() as session:
+        connector = ProxyConnectorWrapper().connector
+        async with aiohttp.ClientSession(connector=connector) as session:
             catPicture = requests.get('http://thecatapi.com/api/images/get.php')
             if catPicture.status_code == 200:
                 catPicture = catPicture.url

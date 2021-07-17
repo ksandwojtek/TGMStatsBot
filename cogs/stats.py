@@ -90,8 +90,8 @@ async def process_stats_command(self, ctx, requested_user):
 
                 page1.timestamp = datetime.datetime.utcnow()
                 page1.set_footer(text='Bot Created by ksndq and LordofLightning',
-                                 icon_url="https://cdn.discordapp.com/icons/754890606173487154"
-                                          "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+                                 icon_url="https://cdn.discordapp.com/icons/865108378153517096"
+                                          "/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
                 page1.set_image(url='https://crafatar.com/renders/head/' + skin)
             ################################################################
             async with cs.get('https://api.pvparca.de/mc/match/latest/' + mc_name, ) as r:
@@ -118,8 +118,8 @@ async def process_stats_command(self, ctx, requested_user):
 
                 page2.timestamp = datetime.datetime.utcnow()
                 page2.set_footer(text='Bot Created by ksndq and LordofLightning',
-                                 icon_url="https://cdn.discordapp.com/icons/754890606173487154"
-                                          "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+                                 icon_url="https://cdn.discordapp.com/icons/865108378153517096"
+                                          "/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
                 page2.set_image(url='https://crafatar.com/renders/head/' + skin)
     else:
         embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)

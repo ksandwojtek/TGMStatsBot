@@ -131,8 +131,8 @@ if __name__ == "__main__":
     #
     #                 page1.timestamp = datetime.datetime.utcnow()
     #                 page1.set_footer(text='Bot Created by ksndq and LordofLightning',
-    #                                  icon_url="https://cdn.discordapp.com/icons/754890606173487154"
-    #                                           "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+    #                                  icon_url="https://cdn.discordapp.com/icons/865108378153517096"
+    #                                           "/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
     #                 page1.set_image(url='https://crafatar.com/renders/head/' + skin)
     #             ################################################################
     #             connector = ProxyConnectorWrapper().connector
@@ -167,8 +167,8 @@ if __name__ == "__main__":
     #
     #                     page2.timestamp = datetime.datetime.utcnow()
     #                     page2.set_footer(text='Bot Created by ksndq and LordofLightning',
-    #                                      icon_url="https://cdn.discordapp.com/icons/754890606173487154"
-    #                                               "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+    #                                      icon_url="https://cdn.discordapp.com/icons/865108378153517096"
+    #                                               "/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
     #                     page2.set_image(url='https://crafatar.com/renders/head/' + skin)
     #     else:
     #         embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
@@ -216,7 +216,7 @@ if __name__ == "__main__":
                 #
                 #         page1.timestamp = datetime.datetime.utcnow()
                 #         page1.set_footer(text='Bot Created by ksndq and LordofLightning',
-                #                          icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+                #                          icon_url="https://cdn.discordapp.com/icons/865108378153517096/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
                 #         ################################################################
                 #         page2 = discord.Embed(title="", color=0xbc2a82)
                 #         page2.set_author(name="Credit List 2/2")
@@ -226,8 +226,8 @@ if __name__ == "__main__":
                 #         page2.add_field(name="Tester", value="<@491621008856449044> <:THAWERZ:856589646909669427>",
                 #                         inline=False)
                 #         page2.set_footer(text='Bot Created by ksndq and LordofLightning',
-                #                          icon_url="https://cdn.discordapp.com/icons/754890606173487154"
-                #                                   "/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+                #                          icon_url="https://cdn.discordapp.com/icons/865108378153517096"
+                #                                   "/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
                 #     else:
                 #         embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
                 #         await ctx.send(embed=embed_var)
@@ -304,7 +304,7 @@ if __name__ == "__main__":
     #                     page1.add_field(name="10. "+ res[9]['name'],
     #                                     value=res[9]['kills'], inline=False)
     #                     page1.timestamp = datetime.datetime.utcnow()
-    #                     page1.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+    #                     page1.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/865108378153517096/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
     #                 ################################################################
     #                     connector = ProxyConnectorWrapper().connector
     #                     async with aiohttp.ClientSession(connector=connector) as cs:
@@ -342,7 +342,7 @@ if __name__ == "__main__":
     #                     page2.add_field(name="10. "+ res[9]['name'],
     #                                     value=res[9]['wins'], inline=False)
     #                     page2.timestamp = datetime.datetime.utcnow()
-    #                     page2.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+    #                     page2.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/865108378153517096/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
     #                 ###############################################################
     #                     connector = ProxyConnectorWrapper().connector
     #                     async with aiohttp.ClientSession(connector=connector) as cs:
@@ -380,7 +380,7 @@ if __name__ == "__main__":
     #                     page3.add_field(name="10. "+ res[9]['name'],
     #                                     value=res[9]['level'], inline=False)
     #                     page3.timestamp = datetime.datetime.utcnow()
-    #                     page3.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+    #                     page3.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/865108378153517096/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
     #                 ################################################################
     #                     connector = ProxyConnectorWrapper().connector
     #                     async with aiohttp.ClientSession(connector=connector) as cs:
@@ -418,7 +418,7 @@ if __name__ == "__main__":
     #                     page4.add_field(name="10. "+ res[9]['name'],
     #                                     value=res[9]['losses'], inline=False)
     #                     page4.timestamp = datetime.datetime.utcnow()
-    #                     page4.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/754890606173487154/a_d0357357c6115502b46b996be1fb32d6.webp?size=64")
+    #                     page4.set_footer(text='Bot Created by ksndq and LordofLightning', icon_url="https://cdn.discordapp.com/icons/865108378153517096/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
     #     else:
     #         embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
     #         await ctx.send(embed=embed_var)

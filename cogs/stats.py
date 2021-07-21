@@ -17,10 +17,10 @@ async def process_stats_command(self, ctx, requested_user):
         flags = ""
         requested_user_string_length = len(requested_user)
         # If requested_user is in the form of a Warzone/TGM playerID
-        if (requested_user_string_length == 24):
+        if requested_user_string_length == 24:
             flags += "?byID=true"
         # If requested_user is in the form of a Minecraft UUID without dashes
-        elif (requested_user_string_length == 32):
+        elif requested_user_string_length == 32:
             requested_user = requested_user[0:8] + "-" \
                              + requested_user[8:12] + "-" \
                              + requested_user[12:16] + "-" \
@@ -28,12 +28,12 @@ async def process_stats_command(self, ctx, requested_user):
                              + requested_user[20:32]
             flags += "?byUUID=true"
         # If requested_user is in the form of a Minecraft UUID with dashes
-        elif (requested_user_string_length == 36):
+        elif requested_user_string_length == 36:
             flags += "?byUUID=true"
         connector = ProxyConnectorWrapper().connector
         async with aiohttp.ClientSession(connector=connector) as cs:
             async with cs.get('https://api.pvparca.de/mc/player/' + requested_user + flags, ) as r:
-                if (r.status == 522 or r.status == 502):
+                if r.status == 522 or r.status == 502:
                     error_message = "The PVP Arcade Team Games API is currently down, please wait for it to by " \
                                     "restored to get up-to-date statistics."
                     print(error_message)
@@ -121,16 +121,16 @@ async def process_stats_command(self, ctx, requested_user):
                                  icon_url="https://cdn.discordapp.com/icons/865108378153517096"
                                           "/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
                 page2.set_image(url='https://crafatar.com/renders/head/' + skin)
+
+                pages = [page1, page2]
+                message = await ctx.send(embed=page1)
+                await message.add_reaction('◀')
+                await message.add_reaction('▶')
+                self.global_variables.messages.append(
+                    {"message": message, "author": ctx.author, "pages": pages, "page_number": 0})
     else:
         embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
-        await ctx.send(embed=embed_var)
-        pass
-
-    pages = [page1, page2]
-    message = await ctx.send(embed=page1)
-    await message.add_reaction('◀')
-    await message.add_reaction('▶')
-    self.global_variables.messages.append({"message": message, "author": ctx.author, "pages": pages, "page_number": 0})
+        await ctx.send(embed=embed_var, delete_after=5.0)
 
 
 class Stats(commands.Cog):
@@ -142,7 +142,11 @@ class Stats(commands.Cog):
 
     @commands.command(aliases=['stat'])
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def stats(self, ctx: commands.context, requested_user: str):
+    async def stats(self, ctx: commands.context, requested_user: str = None):
+        if requested_user is None:
+            embed_var = discord.Embed(title="You must specify a user to check the stats of.", color=0xFF0000)
+            await ctx.send(embed=embed_var)
+            return
         await process_stats_command(self, ctx, requested_user)
 
     ########################################################

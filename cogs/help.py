@@ -33,16 +33,16 @@ async def process_help_command(self, ctx):
         page2.set_footer(text='Bot Created by ksndq and LordofLightning',
                          icon_url="https://cdn.discordapp.com/icons/865108378153517096"
                                   "/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
+
+        pages = [page1, page2]
+        message = await ctx.send(embed=page1)
+        await message.add_reaction('◀')
+        await message.add_reaction('▶')
+        self.global_variables.messages.append(
+            {"message": message, "author": ctx.author, "pages": pages, "page_number": 0})
     else:
         embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
-        await ctx.send(embed=embed_var)
-        pass
-
-    pages = [page1, page2]
-    message = await ctx.send(embed=page1)
-    await message.add_reaction('◀')
-    await message.add_reaction('▶')
-    self.global_variables.messages.append({"message": message, "author": ctx.author, "pages": pages, "page_number": 0})
+        await ctx.send(embed=embed_var, delete_after=5.0)
 
 
 class Help(commands.Cog):

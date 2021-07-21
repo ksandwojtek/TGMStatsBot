@@ -19,6 +19,9 @@ async def process_cat_command(self, ctx):
                 embed_var = discord.Embed(title="Here is a cat! 🐈", color=random.choice(colors))
                 embed_var.set_image(url=cat_picture)
                 await ctx.send(embed=embed_var)
+    else:
+        embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
+        await ctx.send(embed=embed_var, delete_after=5.0)
 
 
 class Cat(commands.Cog):

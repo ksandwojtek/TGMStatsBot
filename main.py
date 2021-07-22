@@ -44,6 +44,7 @@ if __name__ == "__main__":
         await client.change_presence(activity=discord.Game(name="PvPArca.de"))
         print(f'{client.user} has connected to Discord!')
 
+
     # guild_ids = global_variables.config['bot']['guilds']
     # ########################################################
     # options = [
@@ -203,64 +204,63 @@ if __name__ == "__main__":
     #             print(e)
     #             break
 
-                # ##############################################
-                # @slash.slash(name='Help', description='Displays the help menu and credits', guild_ids=guild_ids)
-                # async def help(ctx: SlashContext):
-                #     if ctx.channel.id in global_variables.config['bot']['channels']:
-                #         page1 = discord.Embed(title="", color=0xbc2a82)
-                #         page1.set_author(name="Cylone Stats Bot Help Menu 1/2")
-                #         page1.add_field(name="Stats", value="Displays latest game and player stats on team games",
-                #                         inline=False)
-                #         page1.add_field(name="Lb/Leaderboard", value="Displays various team games leaderboards.",
-                #                         inline=False)
-                #
-                #         page1.timestamp = datetime.datetime.utcnow()
-                #         page1.set_footer(text='Bot Created by ksndq and LordofLightning',
-                #                          icon_url="https://cdn.discordapp.com/icons/865108378153517096/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
-                #         ################################################################
-                #         page2 = discord.Embed(title="", color=0xbc2a82)
-                #         page2.set_author(name="Credit List 2/2")
-                #         page2.add_field(name="Developers", value="<@431703739913732097> <:ksndq:856587427283337236> and "
-                #                                                  "<@336363923542376449> <:LordofLightning:856587426985934910>",
-                #                         inline=False)
-                #         page2.add_field(name="Tester", value="<@491621008856449044> <:THAWERZ:856589646909669427>",
-                #                         inline=False)
-                #         page2.set_footer(text='Bot Created by ksndq and LordofLightning',
-                #                          icon_url="https://cdn.discordapp.com/icons/865108378153517096"
-                #                                   "/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
-                #     else:
-                #         embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
-                #         await ctx.send(embed=embed_var)
-                #         pass
-                #
-                #     pages = [page1, page2]
-                #     message = await ctx.send(embed=page1)
-                #     await message.add_reaction('◀')
-                #     await message.add_reaction('▶')
-                #
-                #     def check(reaction, user):
-                #         return user == ctx.author
-                #
-                #     i = 0
-                #     reaction = None
-                #     while True:
-                #         if str(reaction) == '◀':
-                #             if message.id == reaction.message.id:
-                #                 if i > 0:
-                #                     i -= 1
-                #                     await message.edit(embed=pages[i])
-                #         elif str(reaction) == '▶':
-                #             if message.id == reaction.message.id:
-                #                 if i < 1:
-                #                     i += 1
-                #                     await message.edit(embed=pages[i])
-                #         try:
-                #             reaction, user = await client.wait_for('reaction_add', timeout=45.0, check=check)
-                #             await message.remove_reaction(reaction, user)
-                #         except Exception as e:
-                #             print(e)
-                # break
-
+    # ##############################################
+    # @slash.slash(name='Help', description='Displays the help menu and credits', guild_ids=guild_ids)
+    # async def help(ctx: SlashContext):
+    #     if ctx.channel.id in global_variables.config['bot']['channels']:
+    #         page1 = discord.Embed(title="", color=0xbc2a82)
+    #         page1.set_author(name="Cylone Stats Bot Help Menu 1/2")
+    #         page1.add_field(name="Stats", value="Displays latest game and player stats on team games",
+    #                         inline=False)
+    #         page1.add_field(name="Lb/Leaderboard", value="Displays various team games leaderboards.",
+    #                         inline=False)
+    #
+    #         page1.timestamp = datetime.datetime.utcnow()
+    #         page1.set_footer(text='Bot Created by ksndq and LordofLightning',
+    #                          icon_url="https://cdn.discordapp.com/icons/865108378153517096/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
+    #         ################################################################
+    #         page2 = discord.Embed(title="", color=0xbc2a82)
+    #         page2.set_author(name="Credit List 2/2")
+    #         page2.add_field(name="Developers", value="<@431703739913732097> <:ksndq:856587427283337236> and "
+    #                                                  "<@336363923542376449> <:LordofLightning:856587426985934910>",
+    #                         inline=False)
+    #         page2.add_field(name="Tester", value="<@491621008856449044> <:THAWERZ:856589646909669427>",
+    #                         inline=False)
+    #         page2.set_footer(text='Bot Created by ksndq and LordofLightning',
+    #                          icon_url="https://cdn.discordapp.com/icons/865108378153517096"
+    #                                   "/aa6a471fa500a396a3e0f419b3acad14.png?size=64")
+    #     else:
+    #         embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
+    #         await ctx.send(embed=embed_var)
+    #         pass
+    #
+    #     pages = [page1, page2]
+    #     message = await ctx.send(embed=page1)
+    #     await message.add_reaction('◀')
+    #     await message.add_reaction('▶')
+    #
+    #     def check(reaction, user):
+    #         return user == ctx.author
+    #
+    #     i = 0
+    #     reaction = None
+    #     while True:
+    #         if str(reaction) == '◀':
+    #             if message.id == reaction.message.id:
+    #                 if i > 0:
+    #                     i -= 1
+    #                     await message.edit(embed=pages[i])
+    #         elif str(reaction) == '▶':
+    #             if message.id == reaction.message.id:
+    #                 if i < 1:
+    #                     i += 1
+    #                     await message.edit(embed=pages[i])
+    #         try:
+    #             reaction, user = await client.wait_for('reaction_add', timeout=45.0, check=check)
+    #             await message.remove_reaction(reaction, user)
+    #         except Exception as e:
+    #             print(e)
+    # break
 
     ##############################################
     # @slash.slash(name='Leaderboard', description='Displays team games leaderboards', guild_ids=guild_ids)
@@ -445,6 +445,7 @@ if __name__ == "__main__":
     #                 if i < 1:
     #                     i += 1
     #                     await message.edit(embed=pages[i])
+
 
     @global_variables.client.event
     async def on_reaction_add(reaction, user):

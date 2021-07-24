@@ -34,16 +34,15 @@ async def process_leaderboard_command(self, ctx):
                     res = await r.json()
                     pages.append(self.create_embed(res, i + 1, stat_types[i]))
 
+            message = await ctx.send(embed=pages[0])
+            await message.add_reaction('◀')
+            await message.add_reaction('▶')
+            self.global_variables.messages.append(
+                {"message": message, "author": ctx.author, "pages": pages, "page_number": 0})
+
     else:
         embed_var = discord.Embed(title="You can't use that here!", color=0xFF0000)
-        await ctx.send(embed=embed_var)
-        pass
-
-    message = await ctx.send(embed=pages[0])
-    await message.add_reaction('◀')
-    await message.add_reaction('▶')
-    self.global_variables.messages.append(
-        {"message": message, "author": ctx.author, "pages": pages, "page_number": 0})
+        await ctx.send(embed=embed_var, delete_after=5.0)
 
 
 class Leaderboard(commands.Cog):

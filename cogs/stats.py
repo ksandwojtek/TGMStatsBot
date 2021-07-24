@@ -102,7 +102,7 @@ async def process_stats_command(self, ctx, requested_user):
                 page2.set_author(name=mc_name + " Latest Match Stats 2/2")
                 page2_embed_fields = [
                     EmbedField(name="<a:redblue:853636359108558898> Winning Team",
-                               value=res[0]["match"]["winningTeam"].capitalize()),
+                               value=res[0]["match"]["winningTeam"]),
                     EmbedField(name="<a:match:854808917024309328> Match Size", value=res[0]["matchSize"]),
                     EmbedField(name="<:maps:853637839064924170> Map", value=res[0]["loadedMap"]["name"]),
                     EmbedField(name="<a:clock:854800563857784872> Time elapsed", value=res[0]["timeElapsed"]),

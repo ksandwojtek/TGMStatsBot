@@ -8,8 +8,9 @@ import datetime
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 
-from customobjects import EmbedField, ProxyConnectorWrapper
-from globalvariables import GlobalVariables
+from structs.proxy import ProxyConnectorWrapper
+from structs.embed import EmbedField
+from structs.globals import GlobalVariables
 
 
 async def process_stats_command(self, ctx, requested_user):

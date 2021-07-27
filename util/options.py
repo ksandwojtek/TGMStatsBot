@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from objects.globalvariables import GlobalVariables
+from structs.globals import GlobalVariables
 
 
 def parse_arguments():

@@ -5,7 +5,7 @@ import datetime
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 
-from globalvariables import GlobalVariables
+from structs.globals import GlobalVariables
 
 
 async def process_help_command(self, ctx):
@@ -59,6 +59,7 @@ class Help(commands.Cog):
     @cog_ext.cog_slash(name='Help', description='Displays the help menu and credits', guild_ids=guild_ids)
     async def _help(self, ctx: SlashContext):
         await process_help_command(self, ctx)
+
 
 def setup(client):
     client.add_cog(Help(client))

@@ -4,8 +4,8 @@ import random
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 
-from customobjects import ProxyConnectorWrapper
-from globalvariables import GlobalVariables
+from structs.proxy import ProxyConnectorWrapper
+from structs.globals import GlobalVariables
 
 
 async def process_cat_command(self, ctx):

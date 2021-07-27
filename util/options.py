@@ -1,10 +1,7 @@
 import argparse
 import json
-import optparse
 
-from aiohttp_socks import ProxyConnector
-
-from globalvariables import GlobalVariables
+from objects.globalvariables import GlobalVariables
 
 
 def parse_arguments():

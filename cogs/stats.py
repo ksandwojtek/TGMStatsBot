@@ -57,6 +57,12 @@ async def process_stats_command(self, ctx, requested_user):
                     await ctx.send(embed=embed_var)
                     return
                 #######
+                user_stat_types = ['name', 'uuid', 'lastOnlineDate', 'initialJoinDate', 'wins', 'losses', 'kills',
+                                   'deaths']
+                for stat_type in user_stat_types:
+                    if stat_type is None:
+                        res['user'][stat_type] = "N/A"
+
                 mc_name = res['user']['name']
                 skin = res['user']['uuid']
                 ms = res['user']['lastOnlineDate']

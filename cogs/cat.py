@@ -33,10 +33,12 @@ class Cat(commands.Cog):
 
     @commands.command()
     async def cat(self, ctx: commands.context):
-        await process_cat_command(self, ctx)
+        async with ctx.typing():
+            await process_cat_command(self, ctx)
 
     @cog_ext.cog_slash(name='Cat', description='Shows you an image of a cat', guild_ids=guild_ids)
     async def _cat(self, ctx: SlashContext):
+        await ctx.defer()
         await process_cat_command(self, ctx)
 
 

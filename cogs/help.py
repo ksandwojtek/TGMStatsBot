@@ -54,10 +54,12 @@ class Help(commands.Cog):
 
     @commands.command(aliases=['halp'])
     async def help(self, ctx: commands.context):
-        await process_help_command(self, ctx)
+        async with ctx.typing():
+            await process_help_command(self, ctx)
 
     @cog_ext.cog_slash(name='Help', description='Displays the help menu and credits', guild_ids=guild_ids)
     async def _help(self, ctx: SlashContext):
+        await ctx.defer()
         await process_help_command(self, ctx)
 
 

@@ -57,11 +57,17 @@ async def process_stats_command(self, ctx, requested_user):
                     await ctx.send(embed=embed_var)
                     return
                 #######
+                # Since the API returns nothing when a players stat has not been set, such as when a player has not yet
+                # lost a game or died, we need to do a bit of inefficient processing on our data to make sure everything
+                # still works
                 user_stat_types = ['name', 'uuid', 'lastOnlineDate', 'initialJoinDate', 'wins', 'losses', 'kills',
-                                   'deaths']
+                                   'deaths', 'level', 'wool_destroys']
                 for stat_type in user_stat_types:
                     if stat_type is None:
-                        res['user'][stat_type] = "N/A"
+                        if stat_type == "losses" or stat_type == "deaths":
+                            res['user'][stat_type] = 0
+                        else:
+                            res['user'][stat_type] = "N\A"
 
                 mc_name = res['user']['name']
                 skin = res['user']['uuid']
@@ -69,23 +75,29 @@ async def process_stats_command(self, ctx, requested_user):
                 ms2 = res['user']['initialJoinDate']
                 win = res['user']['wins']
                 lost = res['user']['losses']
+                wl = win / lost if lost != 0 else win
                 k = res['user']['kills']
                 d = res['user']['deaths']
+                kd = k / d if d != 0 else k
+                level = res['user']['level']
+                wool_destroys = res['user']['wool_destroys']
+                matches = res['user']['matches']
+
                 #######
                 page1 = discord.Embed(title="", color=0xbc2a82)
                 page1.set_author(name=mc_name + " Stats on the Team Games Mode of The PVP Arcade Network 1/2")
                 page1_embed_fields = [
                     EmbedField(name="<a:played:853633469014605824> Matches played",
-                               value=res['user']['matches']),
-                    EmbedField(name="<a:kills:853628582731186177> Kills", value=res['user']['kills']),
-                    EmbedField(name="<a:deaths:855109742288437250> Deaths", value=res['user']['deaths']),
-                    EmbedField(name="<a:kd:855110404735893515> K/D", value="{:.2f}".format(k / d)),
-                    EmbedField(name="<a:level:853628581188337666> Level", value=res['user']['level']),
-                    EmbedField(name="<a:wins:853628581698600961> Wins", value=res['user']['wins']),
-                    EmbedField(name="<:loses:853633469070835712> Losses", value=res['user']['losses']),
-                    EmbedField(name="<a:wl:855110803082313728> W/L", value="{:.2f}".format(win / lost)),
+                               value=matches),
+                    EmbedField(name="<a:kills:853628582731186177> Kills", value=k),
+                    EmbedField(name="<a:deaths:855109742288437250> Deaths", value=d),
+                    EmbedField(name="<a:kd:855110404735893515> K/D", value="{:.2f}".format(kd)),
+                    EmbedField(name="<a:level:853628581188337666> Level", value=level),
+                    EmbedField(name="<a:wins:853628581698600961> Wins", value=win),
+                    EmbedField(name="<:loses:853633469070835712> Losses", value=lost),
+                    EmbedField(name="<a:wl:855110803082313728> W/L", value="{:.2f}".format(wl)),
                     EmbedField(name="<a:wool:853628583535968286> Wool Destroys",
-                               value=res['user']['wool_destroys']),
+                               value=wool_destroys),
                     EmbedField(name="Last Online", value=human(ms / 1000.0)),
                     EmbedField(name="Join Date", value=human(ms2 / 1000.0))]
 
@@ -150,11 +162,12 @@ class Stats(commands.Cog):
     @commands.command(aliases=['stat'])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def stats(self, ctx: commands.context, requested_user: str = None):
-        if requested_user is None:
-            embed_var = discord.Embed(title="You must specify a user to check the stats of.", color=0xFF0000)
-            await ctx.send(embed=embed_var)
-            return
-        await process_stats_command(self, ctx, requested_user)
+        async with ctx.typing():
+            if requested_user is None:
+                embed_var = discord.Embed(title="You must specify a user to check the stats of.", color=0xFF0000)
+                await ctx.send(embed=embed_var)
+                return
+            await process_stats_command(self, ctx, requested_user)
 
     ########################################################
     options = [
@@ -169,6 +182,7 @@ class Stats(commands.Cog):
     @cog_ext.cog_slash(name='Stats', description='Displays player stats on team games',
                        guild_ids=guild_ids, options=options)
     async def _stats(self, ctx: SlashContext, requested_user: str):
+        await ctx.defer()
         await process_stats_command(self, ctx, requested_user)
 
 

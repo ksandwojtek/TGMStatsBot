@@ -5,7 +5,7 @@ import datetime
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 
-from structs.globals import GlobalVariables
+from structs.global_vars import GlobalVariables
 
 
 async def process_help_command(self, ctx):

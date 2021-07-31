@@ -12,7 +12,23 @@
 # But the likelihood of this being used for a credible attack is low enough that we can afford to fix this later
 class GlobalVariables(object):
     _instance = None
-    config = None
+    config = {
+      "bot": {
+        "token": "token",
+        "prefix": "*",
+        "channels": 765849289817456651,
+        "guilds": 754890606173487154
+     },
+      "connection": {
+        "proxy": None,
+        "rdns" : None
+      },
+      "strings": {
+        "server_name": "",
+        "server_network_name": ""
+      }
+    }
+
     client = None
     messages = []
 

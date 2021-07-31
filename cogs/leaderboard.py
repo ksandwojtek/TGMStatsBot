@@ -8,7 +8,7 @@ from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 
 from structs.proxy import ProxyConnectorWrapper
-from structs.globals import GlobalVariables
+from structs.global_vars import GlobalVariables
 
 
 async def process_leaderboard_command(self, ctx):

@@ -10,7 +10,7 @@ from discord_slash import cog_ext, SlashContext
 
 from structs.proxy import ProxyConnectorWrapper
 from structs.embed import EmbedField
-from structs.globals import GlobalVariables
+from structs.global_vars import GlobalVariables
 
 
 async def process_stats_command(self, ctx, requested_user):

@@ -5,7 +5,7 @@ from structs.proxy import ProxyConnectorWrapper
 from discord.ext import commands
 from discord_slash import SlashCommand
 from util.options import parse_arguments
-from structs.globals import GlobalVariables
+from structs.global_vars import GlobalVariables
 
 if __name__ == "__main__":
     global_variables = GlobalVariables()

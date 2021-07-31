@@ -1,5 +1,5 @@
 from aiohttp_socks import ProxyConnector
-from structs.globals import GlobalVariables
+from structs.global_vars import GlobalVariables
 
 
 class ProxyConnectorWrapper:

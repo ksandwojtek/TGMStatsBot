@@ -1,10 +1,8 @@
 import argparse
 import json
-import optparse
 
-from aiohttp_socks import ProxyConnector
-
-from globalvariables import GlobalVariables
+from structs.config import Config
+from structs.global_vars import GlobalVariables
 
 
 def parse_arguments():
@@ -21,6 +19,8 @@ def parse_arguments():
                                                                  "user and password parts are optional. For example "
                                                                  "to proxy the bot through TOR use "
                                                                  "socks5://127.0.0.1:9050 as the proxy")
+    parser.add_argument("--config-location", nargs=1, type=str, help="Location of the configuration file; either the "
+                                                                     "path to the config or its containing directory.")
     rdns_feature = parser.add_mutually_exclusive_group(required=False)
     rdns_feature.add_argument('--redirect-dns', dest='rdns', action='store_true', help="Redirects DNS requests through "
                                                                                        "the proxy, highly recommend "
@@ -33,8 +33,12 @@ def parse_arguments():
 
     args = parser.parse_args()
 
-    with open("./config.json", mode="r") as fl:
-        config = json.loads(fl.read())
+    if args.config_location is not None:
+        config = Config(args.config_location).get_config()
+    # else:
+    #     config_location = "./config.json"
+    #     with open(config_location, mode="r") as fl:
+    #         config = json.loads(fl.read())
 
     # args_to_check = ["token", "channel", "guild"]
     if args.token is not None:

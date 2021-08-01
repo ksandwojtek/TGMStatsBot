@@ -1,18 +1,11 @@
 #!python
 import discord
 import os
-import aiohttp
-from customobjects import ProxyConnectorWrapper
-import json
-import argparse
-from ago import human
-from datetime import datetime
-import datetime
+from structs.proxy import ProxyConnectorWrapper
 from discord.ext import commands
-from discord_slash import SlashCommand, SlashContext, context
-from options import parse_arguments
-from customobjects import EmbedField
-from globalvariables import GlobalVariables
+from discord_slash import SlashCommand
+from util.options import parse_arguments
+from structs.global_vars import GlobalVariables
 
 if __name__ == "__main__":
     global_variables = GlobalVariables()

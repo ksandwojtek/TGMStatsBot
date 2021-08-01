@@ -5,14 +5,30 @@
 # if __name__ == "__main__": line to prevent most of the class from running when being imported complicates this further
 
 # Our only other option was saving our data to a file and loading it again, which would be inefficient at best
-# So I've settled on working around the nature of Python's objects and created a class that returns the same object in
+# So I've settled on working around the nature of Python's structs and created a class that returns the same object in
 # every instance of that class
 
 # This class does expose the entire config object which could be a security risk
 # But the likelihood of this being used for a credible attack is low enough that we can afford to fix this later
 class GlobalVariables(object):
     _instance = None
-    config = None
+    config = {
+      "bot": {
+        "token": "token",
+        "prefix": "*",
+        "channels": 765849289817456651,
+        "guilds": 754890606173487154
+     },
+      "connection": {
+        "proxy": None,
+        "rdns" : None
+      },
+      "strings": {
+        "server_name": "",
+        "server_network_name": ""
+      }
+    }
+
     client = None
     messages = []
 

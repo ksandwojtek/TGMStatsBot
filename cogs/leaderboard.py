@@ -7,8 +7,8 @@ import datetime
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 
-from customobjects import ProxyConnectorWrapper
-from globalvariables import GlobalVariables
+from structs.proxy import ProxyConnectorWrapper
+from structs.global_vars import GlobalVariables
 
 
 async def process_leaderboard_command(self, ctx):
@@ -31,7 +31,8 @@ async def process_leaderboard_command(self, ctx):
                         # Add a cache that returns cached values if the API is down with the date of when the
                         # data Was last updated
                         return
-                    res = await r.json()
+                    res = await r.json(content_type=None)
+
                     pages.append(self.create_embed(res, i + 1, stat_types[i]))
 
             message = await ctx.send(embed=pages[0])
@@ -78,10 +79,12 @@ class Leaderboard(commands.Cog):
     @commands.command(aliases=["lb", "leaderboards"])
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def leaderboard(self, ctx: commands.context):
-        await process_leaderboard_command(self, ctx)
+        async with ctx.typing():
+            await process_leaderboard_command(self, ctx)
 
     @cog_ext.cog_slash(name='Leaderboard', description='Displays team games leaderboards', guild_ids=guild_ids)
     async def _leaderboard(self, ctx: SlashContext):
+        await ctx.defer()
         await process_leaderboard_command(self, ctx)
 
 

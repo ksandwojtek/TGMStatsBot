@@ -67,6 +67,7 @@ async def process_stats_command(self, ctx, requested_user):
                         res['user'][stat_type] = 0
 
                 mc_name = res['user']['name']
+                mc_name_possession_string = mc_name + "'s" if not mc_name.endswith("s") else mc_name + "'"
                 skin = res['user']['uuid']
                 ms = res['user']['lastOnlineDate']
                 ms2 = res['user']['initialJoinDate']
@@ -81,7 +82,8 @@ async def process_stats_command(self, ctx, requested_user):
                 matches = res['user']['matches']
                 #######
                 page1 = discord.Embed(title="", color=0xbc2a82)
-                page1.set_author(name=mc_name + " Stats on the Team Games Mode of The PVP Arcade Network 1/2")
+                page1.set_author(name=mc_name_possession_string +
+                                      " Stats on the Team Games Mode of The PVP Arcade Network 1/2")
                 page1_embed_fields = [
                     EmbedField(name="<a:wl:855110803082313728> W/L", value="{:.2f}".format(wl)),
                     EmbedField(name="<a:wins:853628581698600961> Wins", value=win),
@@ -112,7 +114,8 @@ async def process_stats_command(self, ctx, requested_user):
                 ms3 = res[0]['match']['startedDate']
                 i = 0
                 page2 = discord.Embed(title="", color=0xbc2a82)
-                page2.set_author(name=mc_name + " Latest Match Stats 2/2")
+                page2.set_author(name=mc_name_possession_string +
+                                      " Latest Match Stats 2/2")
                 page2_embed_fields = [
                     EmbedField(name="<a:redblue:853636359108558898> Winning Team",
                                value=res[0]["match"]["winningTeam"]),

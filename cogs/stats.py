@@ -58,16 +58,13 @@ async def process_stats_command(self, ctx, requested_user):
                     return
                 #######
                 # Since the API returns nothing when a players stat has not been set, such as when a player has not yet
-                # lost a game or died, we need to do a bit of inefficient processing on our data to make sure everything
-                # still works
+                # lost a game or died, we need to do a bit of pre-processing on our data to make sure everything works
+                # If the APi returns nothing in other cases, well to bad the program will probably break
                 user_stat_types = ['name', 'uuid', 'lastOnlineDate', 'initialJoinDate', 'wins', 'losses', 'kills',
                                    'deaths', 'level', 'wool_destroys']
                 for stat_type in user_stat_types:
-                    if stat_type is None:
-                        if stat_type == "losses" or stat_type == "deaths":
-                            res['user'][stat_type] = 0
-                        else:
-                            res['user'][stat_type] = "N\A"
+                    if stat_type not in res['user']:
+                        res['user'][stat_type] = 0
 
                 mc_name = res['user']['name']
                 skin = res['user']['uuid']
